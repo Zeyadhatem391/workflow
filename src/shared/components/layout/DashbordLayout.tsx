@@ -14,9 +14,9 @@ export default function DashbordLayout({ children }: Props) {
       <div className="flex flex-1 overflow-hidden">
         <SideBar />
 
-        <main className="flex-1 overflow-y-auto bg-gray-100/50 p-4 lg:p-8">
+        <main className="flex-1 overflow-y-auto bg-gray-100/50 dark:bg-zinc-950 p-4 lg:p-8">
           {children}
-          <div className="mb-5" />
+          <div className="mb-15 lg:mb-5 " />
         </main>
       </div>
     </div>
