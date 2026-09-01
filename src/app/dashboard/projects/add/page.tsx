@@ -94,7 +94,6 @@ function page() {
     <div className="flex w-full justify-center px-3 py-4 sm:px-5 sm:py-6 lg:px-6">
       <div className="w-full max-w-3xl rounded-xl bg-white p-4 shadow-sm dark:bg-zinc-900 sm:p-6 lg:p-7">
         <div className="space-y-5">
-          {/* Header */}
           <div>
             <h1 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
               Add Project
@@ -109,7 +108,6 @@ function page() {
             className="space-y-6 sm:space-y-7"
             onSubmit={handleSubmit(onSubmit)}
           >
-            {/* Title + Description */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="grid gap-1.5">
                 <Label
@@ -156,9 +154,7 @@ function page() {
               </div>
             </div>
 
-            {/* Dates */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {/* Start Date */}
               <div className="grid gap-1.5">
                 <Label
                   htmlFor="startdate"
@@ -186,7 +182,6 @@ function page() {
                 )}
               </div>
 
-              {/* Due Date */}
               <div className="grid gap-1.5">
                 <Label
                   htmlFor="duedate"
@@ -215,9 +210,7 @@ function page() {
               </div>
             </div>
 
-            {/* Status + Priority */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {/* Status */}
               <Controller
                 name="status"
                 control={control}
@@ -255,7 +248,6 @@ function page() {
                 )}
               />
 
-              {/* Priority */}
               <Controller
                 name="priority"
                 control={control}
@@ -293,9 +285,7 @@ function page() {
               />
             </div>
 
-            {/* Admin + Members */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {/* Admin */}
               <Controller
                 name="admin"
                 control={control}
@@ -331,7 +321,6 @@ function page() {
                 )}
               />
 
-              {/* Members */}
               <Controller
                 name="membersList"
                 control={control}
@@ -421,7 +410,6 @@ function page() {
               />
             </div>
 
-            {/* Actions */}
             <div className="flex flex-col-reverse gap-3 border-t border-gray-200 pt-5 dark:border-zinc-700 sm:flex-row sm:justify-end">
               <Button
                 onClick={() => {

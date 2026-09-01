@@ -4,12 +4,9 @@ import { useEffect, useState } from "react";
 
 import { useProjectStore } from "@/features/projects/store/project.store";
 import { useTaskStore } from "@/features/tasks/store/task.store";
+import { useUserStore } from "@/features/auth/store/register.store";
 
-function ZustandProviders({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function ZustandProviders({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -17,6 +14,7 @@ function ZustandProviders({
       await Promise.all([
         useProjectStore.persist.rehydrate(),
         useTaskStore.persist.rehydrate(),
+        useUserStore.persist.rehydrate(),
       ]);
 
       setHydrated(true);

@@ -1,18 +1,21 @@
 import { Logo } from "@/assets/images/images";
 import { BellDot, CircleQuestionMark } from "lucide-react";
 import Image from "next/image";
-import ThemeToggle from "./ThemeToggle";
+import ThemeToggle from "./NavBar/ThemeToggle";
+import AuthUser from "./NavBar/AuthUser";
+import Link from "next/link";
 
 export default function NavBar() {
   return (
     <header className="flex h-16 items-center justify-between bg-white px-3 sm:h-18 sm:px-4 lg:px-6 dark:bg-zinc-900">
-      <Image
-        src={Logo}
-        alt="logo"
-        priority
-        loading="eager"
-        className="h-auto w-[110px] sm:w-[130px] lg:w-[150px]"
-      />
+      <Link href="/" className="shrink-0 transition-opacity hover:opacity-80">
+        <Image
+          src={Logo}
+          alt="Logo"
+          priority
+          className="h-auto w-[120px] sm:w-[140px]"
+        />
+      </Link>
 
       <div className="flex items-center gap-2 sm:gap-4 lg:gap-6">
         <div className="flex items-center gap-1 border-r border-gray-200 pr-2 sm:gap-2 sm:pr-3 dark:border-zinc-700">
@@ -35,21 +38,7 @@ export default function NavBar() {
           </button>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3 lg:mr-2">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-900 text-xs font-semibold text-white sm:h-11 sm:w-11 sm:text-sm">
-            ZH
-          </div>
-
-          <div className="hidden flex-col sm:flex">
-            <span className="text-sm font-semibold text-gray-900 dark:text-zinc-100">
-              Zeyad Hatem
-            </span>
-
-            <span className="text-xs text-gray-500 dark:text-zinc-400">
-              Administrator
-            </span>
-          </div>
-        </div>
+        <AuthUser />
       </div>
     </header>
   );
