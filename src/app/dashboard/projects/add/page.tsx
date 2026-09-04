@@ -75,7 +75,6 @@ function page() {
       admin: data.admin,
 
       tasks: 0,
-      completedTasks: 0,
 
       members: data.membersList.length,
       membersList: data.membersList,
