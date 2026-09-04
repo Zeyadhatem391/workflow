@@ -20,3 +20,7 @@ export const getCurrentUser = (): CurrentUser | null => {
         return null;
     }
 };
+
+export const logout = () => {
+  Cookies.remove("user");
+};

@@ -17,15 +17,12 @@ function Page() {
     return <div>Project not found</div>;
   }
 
-    const tasks = useTaskStore((state) => state.tasks);
-  
- 
-  
+  const tasks = useTaskStore((state) => state.tasks);
 
   return (
     <div>
-      <ProjectInfo project={project} tasks={tasks}/>
-      <ProjectTasks tasks={tasks} project={project}/>
+      <ProjectInfo project={project} tasks={tasks} />
+      <ProjectTasks tasks={tasks} project={project} />
     </div>
   );
 }

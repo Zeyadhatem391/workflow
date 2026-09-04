@@ -19,13 +19,7 @@ import { Project } from "../types/project";
 import { Task } from "@/features/tasks/types/task";
 import DeleteProjectDialog from "./DeleteProjectDialog";
 
-function ProjectInfo({
-  project,
-  tasks,
-}: {
-  project: Project;
-  tasks: Task[];
-}) {
+function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const statusStyles = {
@@ -143,9 +137,7 @@ function ProjectInfo({
             <ListTodo className="hidden h-5 w-5 text-muted-foreground sm:block" />
 
             <div>
-              <p className="text-xs text-muted-foreground sm:text-sm">
-                Tasks
-              </p>
+              <p className="text-xs text-muted-foreground sm:text-sm">Tasks</p>
 
               <p className="text-sm font-bold text-foreground sm:text-base">
                 {tasks.length}
@@ -162,7 +154,7 @@ function ProjectInfo({
               </p>
 
               <p className="text-sm font-bold text-foreground sm:text-base">
-                {project.completedTasks}
+                {tasks.filter((task) => task.status === "done").length}
               </p>
             </div>
           </div>

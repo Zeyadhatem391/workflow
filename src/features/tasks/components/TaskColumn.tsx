@@ -55,7 +55,7 @@ function TaskColumn({ id, title, count, children }: Props) {
         className={`min-h-[220px] rounded-xl border p-2 transition-all duration-200 sm:min-h-[250px] ${
           isOver
             ? "border-blue-300 bg-blue-50/70 shadow-inner dark:border-blue-500/40 dark:bg-blue-500/5"
-            : "border-transparent bg-gray-50/50 dark:bg-zinc-950/30"
+            : "border-transparent bg-app-bg"
         }`}
       >
         <div className="flex min-h-[204px] flex-col gap-3 sm:min-h-[234px]">

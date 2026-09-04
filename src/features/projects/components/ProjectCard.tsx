@@ -9,6 +9,7 @@ import { Project } from "../types/project";
 
 import { formatDate } from "@/shared/components/FormatDate";
 import Link from "next/link";
+import { useTaskStore } from "@/features/tasks/store/task.store";
 
 interface Props {
   project: Project;
@@ -32,6 +33,8 @@ function ProjectCard({ project }: Props) {
       "bg-orange-500/10 text-orange-600 dark:bg-orange-400/10 dark:text-orange-400",
     high: "bg-red-500/10 text-red-600 dark:bg-red-400/10 dark:text-red-400",
   };
+
+  const tasks = useTaskStore((state) => state.tasks);
 
   return (
     <Link href={`/dashboard/projects/${project.id}`} className="block h-full">
@@ -124,7 +127,8 @@ function ProjectCard({ project }: Props) {
             </div>
 
             <p className="mt-1 text-sm font-semibold text-gray-900 dark:text-zinc-100">
-              {project.completedTasks}/{project.tasks}
+              {tasks.filter((task) => task.status === "done").length}/
+              {tasks.length}
             </p>
           </div>
 

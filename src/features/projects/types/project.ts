@@ -14,7 +14,7 @@ export interface Project {
   admin: string;
 
   tasks: number;
-  completedTasks: number;
+ 
 
   members: number;
   membersList?: string[];

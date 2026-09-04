@@ -37,10 +37,6 @@ function Page() {
           </Button>
         </Link>
       </div>
-
-
-    
-
       <Projects />
     </div>
   );

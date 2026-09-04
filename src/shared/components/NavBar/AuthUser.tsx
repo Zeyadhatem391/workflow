@@ -3,34 +3,70 @@
 import { getCurrentUser } from "@/features/auth/helper/auth";
 import Link from "next/link";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import LogoutButton from "./LogoutButton";
+
 function AuthUser() {
   const user = getCurrentUser();
 
   if (!user) {
     return (
-      <Link href="/login">
-        <div className="text-sm font-semibold text-gray-900 dark:text-zinc-100">
-          Login
-        </div>
+      <Link
+        href="/login"
+        className="text-sm font-semibold text-app-icon transition-colors hover:text-app-icon-hover"
+      >
+        Login{" "}
       </Link>
     );
   }
 
-  return (
-    <div className="flex items-center gap-2">
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-900 text-sm font-semibold text-white">
-        {user.name
-          .split(" ")
-          .map((word) => word[0])
-          .join("")
-          .slice(0, 2)
-          .toUpperCase()}
-      </div>
+  const initials = user.name
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
-      <span className="hidden lg:block text-sm font-semibold text-gray-900 dark:text-zinc-100">
-        {user.name}
-      </span>
-    </div>
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="flex items-center gap-2 rounded-full outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-menu-active-bg focus-visible:ring-offset-2 focus-visible:ring-offset-layout-bg">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-menu-active-bg text-sm font-semibold text-menu-active-text">
+          {initials}
+        </div>
+
+        <span className="hidden max-w-32 truncate text-sm font-semibold text-app-icon-hover lg:block">
+          {user.name}
+        </span>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent
+        align="end"
+        sideOffset={8}
+        className="w-48 bg-layout-bg text-app-icon-hover shadow-lg"
+      >
+        <DropdownMenuItem
+          asChild
+          className="cursor-pointer focus:bg-menu-hover-bg focus:text-app-icon-hover"
+        >
+          <Link href="/profile" className="w-full">
+            Profile
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          asChild
+          className="cursor-pointer p-0 focus:bg-transparent"
+        >
+          <LogoutButton />
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
