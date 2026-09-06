@@ -18,63 +18,68 @@ import { formatDate, formatDateTime } from "@/shared/components/FormatDate";
 import { Project } from "../types/project";
 import { Task } from "@/features/tasks/types/task";
 import DeleteProjectDialog from "./DeleteProjectDialog";
+import { calculateProjectProgress } from "../helper/calculateProjectProgress";
 
 function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const statusStyles = {
-    active: "bg-green-500/10 text-green-600 dark:text-green-400",
-    completed: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-    "on-hold": "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
+  const statusStyles: Record<string, string> = {
+    active: "bg-status-success-bg text-status-success",
+    completed: "bg-status-info-bg text-status-info",
+    "on-hold": "bg-status-warning-bg text-status-warning",
     planning: "bg-muted text-muted-foreground",
   };
 
-  const priorityStyles = {
-    high: "bg-red-500/10 text-red-600 dark:text-red-400",
-    medium: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+  const priorityStyles: Record<string, string> = {
+    high: "bg-destructive/10 text-destructive",
+    medium: "bg-status-warning-bg text-status-warning",
     low: "bg-muted text-muted-foreground",
   };
 
-  return (
-    <section className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
-      {/* Header */}
-      <div className="border-b border-border pb-5">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          {/* Project Info */}
-          <div className="min-w-0 flex-1">
-            <div className="mb-2.5 flex flex-wrap items-center gap-2">
-              <h1 className="min-w-0 max-w-full truncate text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-                {project.title}
-              </h1>
+  const completedTasks = tasks.filter((task) => task.status === "done").length;
 
+  const progress = calculateProjectProgress(tasks.length, completedTasks);
+
+  return (
+    <section className="rounded-2xl border p-4 shadow-sm sm:p-5 dark:border-zinc-800 dark:bg-zinc-900  border-gray-200/70 bg-white">
+      {/* Header */}{" "}
+      <div className="border-b border-gray-200 dark:border-gray-800 pb-5">
+        {" "}
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          {/* Project Info */}{" "}
+          <div className="min-w-0 flex-1">
+            {" "}
+            <div className="mb-2.5 flex flex-wrap items-center gap-2">
+              {" "}
+              <h1 className="min-w-0 max-w-full truncate text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+                {project.title}{" "}
+              </h1>
               <span
                 className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${
-                  statusStyles[project.status]
+                  statusStyles[project.status] ??
+                  "bg-muted text-muted-foreground"
                 }`}
               >
                 {project.status}
               </span>
-
               <span
                 className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${
-                  priorityStyles[project.priority]
+                  priorityStyles[project.priority] ??
+                  "bg-status-warning-bg text-status-warning"
                 }`}
               >
                 {project.priority}
               </span>
             </div>
-
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground sm:text-[15px]">
               {project.description}
             </p>
           </div>
-
           {/* Actions */}
           <div className="flex w-full gap-2 sm:w-auto">
             <Button
-              variant="outline"
               size="sm"
-              className="h-9 flex-1 cursor-pointer gap-1.5 rounded-lg sm:flex-none"
+              className="h-9 flex-1 cursor-pointer gap-1.5 rounded-lg sm:flex-none text-white"
             >
               <Pencil className="h-4 w-4" />
               <span>Edit</span>
@@ -82,7 +87,7 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
 
             <Button
               size="sm"
-              className="h-9 flex-1 cursor-pointer gap-1.5 rounded-lg bg-blue-700 text-white hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 sm:flex-none"
+              className="h-9 flex-1 cursor-pointer gap-1.5 rounded-lg bg-primary text-white hover:bg-primary-hover sm:flex-none"
             >
               <CirclePlus className="h-4 w-4" />
               <span>Add Task</span>
@@ -92,7 +97,7 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
               variant="destructive"
               size="sm"
               onClick={() => setDeleteDialogOpen(true)}
-              className="h-9 flex-1 cursor-pointer gap-1.5 rounded-lg sm:flex-none"
+              className="h-9 flex-1 cursor-pointer gap-1.5 rounded-lg sm:flex-none bg-red-700 text-white"
             >
               <Trash2 className="h-4 w-4" />
               <span>Delete</span>
@@ -106,9 +111,8 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
           </div>
         </div>
       </div>
-
       {/* Progress + Stats */}
-      <div className="grid gap-5 border-b border-border py-5 lg:grid-cols-[1fr_auto] lg:items-center">
+      <div className="grid gap-5 border-b border-gray-200 dark:border-gray-800 py-5 lg:grid-cols-[1fr_auto] lg:items-center">
         {/* Progress */}
         <div className="min-w-0">
           <div className="mb-2 flex items-center justify-between">
@@ -117,15 +121,15 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
             </span>
 
             <span className="text-sm font-bold text-foreground">
-              {project.progress}%
+              {progress}%
             </span>
           </div>
 
           <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
             <div
-              className="h-full rounded-full bg-blue-700 transition-all duration-500 dark:bg-blue-500"
+              className="h-full rounded-full bg-primary transition-all duration-500"
               style={{
-                width: `${project.progress}%`,
+                width: `${progress}%`,
               }}
             />
           </div>
@@ -154,7 +158,7 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
               </p>
 
               <p className="text-sm font-bold text-foreground sm:text-base">
-                {tasks.filter((task) => task.status === "done").length}
+                {completedTasks}
               </p>
             </div>
           </div>
@@ -174,7 +178,6 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
           </div>
         </div>
       </div>
-
       {/* Project Details */}
       <div className="grid gap-5 py-5 sm:grid-cols-2 lg:grid-cols-4">
         {/* Start Date */}
@@ -236,7 +239,7 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
                 <div
                   key={`${member}-${index}`}
                   title={member}
-                  className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-card bg-blue-500/10 text-[10px] font-bold text-blue-600 dark:text-blue-400"
+                  className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-card bg-status-info-bg text-[10px] font-bold text-status-info"
                 >
                   {member.charAt(0).toUpperCase()}
                 </div>
@@ -251,9 +254,8 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
           </div>
         </div>
       </div>
-
       {/* Created */}
-      <div className="border-t border-border pt-4 text-xs text-muted-foreground sm:text-sm">
+      <div className="border-t border-gray-200 dark:border-gray-800 pt-4 text-xs text-muted-foreground sm:text-sm">
         Created {formatDate(project.createdAt)}
       </div>
     </section>

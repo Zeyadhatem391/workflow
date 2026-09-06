@@ -7,10 +7,12 @@ export interface Task {
     projectId: string;
     assigneeId: string;
 
+    userId: string;
+
     dueDate: string;
 
-    priority: "low" | "medium" | "high";
-    status: "todo" | "in-progress" | "review" | "done";
+    priority: string;
+    status: string;
 
     createdAt: string;
 }

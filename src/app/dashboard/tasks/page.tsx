@@ -6,7 +6,6 @@ import Link from "next/link";
 function Page() {
   return (
     <div className="space-y-5 sm:space-y-6">
-      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
@@ -35,7 +34,6 @@ function Page() {
         </Link>
       </div>
 
-      {/* Task Board */}
       <div className="min-w-0">
         <TaskBoard />
       </div>

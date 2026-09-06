@@ -8,18 +8,18 @@ export interface Project {
   startDate: string;
   dueDate: string;
 
-  status: "planning" | "active" | "completed" | "on-hold";
-  priority: "low" | "medium" | "high";
+  status: string;
+  priority: string;
 
   admin: string;
 
-  tasks: number;
- 
+  userId: string;
+
   members: number;
   membersList?: string[];
 
-  progress: number;
+
 
   createdAt: string;
- 
+
 }

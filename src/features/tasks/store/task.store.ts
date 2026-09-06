@@ -9,6 +9,8 @@ interface TaskStore {
     removeTask: (id: string) => void;
     updateTask: (id: string, task: Partial<Task>) => void;
     getTaskById: (id: string) => Task | undefined;
+
+    getTasksByProjectId: (projectId: string) => Task[];
 }
 
 export const useTaskStore = create<TaskStore>()(
@@ -17,12 +19,10 @@ export const useTaskStore = create<TaskStore>()(
             (set, get) => ({
                 tasks: [],
 
-
                 addTask: (task) =>
                     set((state) => ({
                         tasks: [...state.tasks, task],
                     })),
-
 
                 removeTask: (id) =>
                     set((state) => ({
@@ -30,7 +30,6 @@ export const useTaskStore = create<TaskStore>()(
                             (task) => task.id !== id
                         ),
                     })),
-
 
                 updateTask: (id, updatedTask) =>
                     set((state) => ({
@@ -41,10 +40,15 @@ export const useTaskStore = create<TaskStore>()(
                         ),
                     })),
 
-
                 getTaskById: (id) =>
                     get().tasks.find(
                         (task) => task.id === id
+                    ),
+
+             
+                getTasksByProjectId: (projectId) =>
+                    get().tasks.filter(
+                        (task) => task.projectId === projectId
                     ),
             }),
             {

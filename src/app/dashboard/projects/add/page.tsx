@@ -28,9 +28,24 @@ import {
 import { useRouter } from "next/navigation";
 import { useProjectStore } from "@/features/projects/store/project.store";
 import { Project } from "@/features/projects/types/project";
+import { useProjectStatusStore } from "@/features/projects/store/statusProject.store";
+import { useProjectPriorityStore } from "@/features/projects/store/priorityProject.store";
+import { getCurrentUser } from "@/features/auth/helper/auth";
 
 function page() {
   const router = useRouter();
+
+  const user = getCurrentUser();
+
+  if (!user) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <p className="text-sm text-muted-foreground">
+          Please log in to perform any activities.
+        </p>
+      </div>
+    );
+  }
 
   const {
     register,
@@ -42,8 +57,8 @@ function page() {
     resolver: zodResolver(AddProject),
     mode: "all",
     defaultValues: {
-      status: "planning",
-      priority: "medium",
+      status: "",
+      priority: "",
       membersList: [],
     },
   });
@@ -56,6 +71,8 @@ function page() {
   const dueDateRegister = register("dueDate");
 
   const addProject = useProjectStore((state) => state.addProject);
+  const projectStatus = useProjectStatusStore((state) => state.statuses);
+  const priorities = useProjectPriorityStore((state) => state.priorities);
 
   const onSubmit = async (data: AddProjectInput) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -74,12 +91,10 @@ function page() {
 
       admin: data.admin,
 
-      tasks: 0,
-
       members: data.membersList.length,
       membersList: data.membersList,
 
-      progress: 0,
+      userId:user.id,
 
       createdAt: new Date().toISOString(),
     };
@@ -119,8 +134,9 @@ function page() {
                 <Input
                   id="title"
                   type="text"
+                  placeholder="E-commerce store project"
                   {...register("title")}
-                  className="h-10 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus-visible:ring-blue-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                  className="h-10 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus-visible:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                 />
 
                 {errors.title && (
@@ -141,8 +157,9 @@ function page() {
                 <Input
                   id="description"
                   type="text"
+                  placeholder="It is an online shopping site...."
                   {...register("description")}
-                  className="h-10 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus-visible:ring-blue-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                  className="h-10 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus-visible:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                 />
 
                 {errors.description && (
@@ -225,16 +242,22 @@ function page() {
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger
                         id="status"
-                        className="h-10 w-full rounded-xl border-gray-200 bg-gray-50 py-5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                        className="h-10 w-full rounded-xl border-gray-200 bg-gray-50 py-5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus-visible:ring-0"
                       >
                         <SelectValue placeholder="Select Status" />
                       </SelectTrigger>
 
-                      <SelectContent className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
-                        <SelectItem value="planning">Planning</SelectItem>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                        <SelectItem value="on-hold">On Hold</SelectItem>
+                      <SelectContent
+                        position="popper"
+                        side="bottom"
+                        align="start"
+                        className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+                      >
+                        {projectStatus.map((status) => (
+                          <SelectItem key={status.id} value={status.id}>
+                            {status.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
 
@@ -262,15 +285,22 @@ function page() {
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger
                         id="priority"
-                        className="h-10 w-full rounded-xl border-gray-200 bg-gray-50 py-5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                        className="h-10 w-full rounded-xl border-gray-200 bg-gray-50 py-5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus-visible:ring-0"
                       >
                         <SelectValue placeholder="Select Priority" />
                       </SelectTrigger>
 
-                      <SelectContent className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
+                      <SelectContent
+                        position="popper"
+                        side="bottom"
+                        align="start"
+                        className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+                      >
+                        {priorities.map((priority) => (
+                          <SelectItem key={priority.id} value={priority.id}>
+                            {priority.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
 
@@ -305,7 +335,12 @@ function page() {
                         <SelectValue placeholder="Select Admin" />
                       </SelectTrigger>
 
-                      <SelectContent className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
+                      <SelectContent
+                        position="popper"
+                        side="bottom"
+                        align="start"
+                        className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+                      >
                         <SelectItem value="zeyad">Zeyad</SelectItem>
                         <SelectItem value="ali">Ali</SelectItem>
                       </SelectContent>
@@ -383,7 +418,10 @@ function page() {
                                   field.onChange(updatedMembers);
                                 }}
                               >
-                                <Checkbox checked={isSelected} />
+                                <Checkbox
+                                  checked={isSelected}
+                                  className="text-white border border-gray-800 dark:border-gray-100"
+                                />
 
                                 <span className="text-sm font-medium">
                                   {member.name}

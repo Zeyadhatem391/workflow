@@ -10,13 +10,14 @@ import { Project } from "../types/project";
 import { formatDate } from "@/shared/components/FormatDate";
 import Link from "next/link";
 import { useTaskStore } from "@/features/tasks/store/task.store";
+import { calculateProjectProgress } from "../helper/calculateProjectProgress";
 
 interface Props {
   project: Project;
 }
 
 function ProjectCard({ project }: Props) {
-  const statusStyles = {
+  const statusStyles: Record<string, string> = {
     planning:
       "bg-blue-500/10 text-blue-600 dark:bg-blue-400/10 dark:text-blue-400",
     active:
@@ -27,14 +28,22 @@ function ProjectCard({ project }: Props) {
       "bg-yellow-500/10 text-yellow-600 dark:bg-yellow-400/10 dark:text-yellow-400",
   };
 
-  const priorityStyles = {
+  const priorityStyles: Record<string, string> = {
     low: "bg-slate-500/10 text-slate-600 dark:bg-slate-400/10 dark:text-slate-400",
     medium:
       "bg-orange-500/10 text-orange-600 dark:bg-orange-400/10 dark:text-orange-400",
     high: "bg-red-500/10 text-red-600 dark:bg-red-400/10 dark:text-red-400",
   };
 
-  const tasks = useTaskStore((state) => state.tasks);
+  const getTasksByProjectId = useTaskStore(
+    (state) => state.getTasksByProjectId,
+  );
+
+  const tasks = getTasksByProjectId(project.id);
+
+  const completedTasks = tasks.filter((task) => task.status === "done").length;
+
+  const progress = calculateProjectProgress(tasks.length, completedTasks);
 
   return (
     <Link href={`/dashboard/projects/${project.id}`} className="block h-full">
@@ -82,16 +91,20 @@ function ProjectCard({ project }: Props) {
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <span
             className={`rounded-full px-2.5 py-1 text-[11px] font-medium capitalize sm:px-3 sm:text-xs ${
-              statusStyles[project.status]
+              statusStyles[project.status] ??
+              "bg-green-500/10 text-green-600 dark:bg-green-400/10 dark:text-green-400"
             }`}
           >
             {project.status}
           </span>
 
           <span
-            className={`rounded-full px-2.5 py-1 text-[11px] font-medium capitalize sm:px-3 sm:text-xs ${
-              priorityStyles[project.priority]
-            }`}
+            className={`rounded-full px-2.5 py-1 text-[11px] font-medium capitalize sm:px-3 sm:text-xs 
+              ${
+                priorityStyles[project.priority] ??
+                "bg-gray-500/10 text-gray-600 dark:bg-gray-500/10 dark:text-gray-400"
+              }
+              `}
           >
             {project.priority} priority
           </span>
@@ -104,7 +117,7 @@ function ProjectCard({ project }: Props) {
             </span>
 
             <span className="text-xs font-semibold text-gray-900 sm:text-sm dark:text-zinc-100">
-              {project.progress}%
+              {progress}%
             </span>
           </div>
 
@@ -112,7 +125,7 @@ function ProjectCard({ project }: Props) {
             <div
               className="h-full rounded-full bg-blue-700 transition-all duration-500 dark:bg-blue-600"
               style={{
-                width: `${project.progress}%`,
+                width: `${progress}%`,
               }}
             />
           </div>
@@ -127,8 +140,7 @@ function ProjectCard({ project }: Props) {
             </div>
 
             <p className="mt-1 text-sm font-semibold text-gray-900 dark:text-zinc-100">
-              {tasks.filter((task) => task.status === "done").length}/
-              {tasks.length}
+              {completedTasks}/{tasks.length}
             </p>
           </div>
 

@@ -17,7 +17,7 @@ export default function DashbordLayout({ children }: Props) {
         <main className="flex-1 overflow-y-auto bg-app-bg p-4 lg:p-8">
           {children}
 
-          <div className="mb-15 lg:mb-5" />
+          <div className="my-20  lg:mb-5" />
         </main>
       </div>
     </div>

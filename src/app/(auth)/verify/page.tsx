@@ -124,7 +124,6 @@ function Page() {
       return;
     }
 
-    // هل انتهت الـ 5 دقائق؟
     if (Date.now() > resetOtp.expiresAt) {
       clearResetOtp();
 
@@ -133,7 +132,6 @@ function Page() {
       return;
     }
 
-    // هل الكود صحيح؟
     if (data.otp !== resetOtp.otp) {
       toast.error("Invalid verification code.");
       return;
@@ -145,94 +143,92 @@ function Page() {
   };
 
   return (
-    <main className="bg-gray-50 text-gray-900 transition-colors dark:bg-zinc-950 dark:text-zinc-100">
-      <section className="flex items-center justify-center px-4 sm:px-6">
-        <div className="w-full max-w-md">
-          <Card className="border-gray-200/80 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-            <CardHeader className="space-y-3 text-center">
-              <CardTitle className="text-2xl font-bold tracking-tight">
-                Verify your email
-              </CardTitle>
+    <section className="flex items-center justify-center px-4 sm:px-6">
+      <div className="w-full max-w-md">
+        <Card className="ring-0! bg-white shadow-sm dark:bg-zinc-900">
+          <CardHeader className="space-y-3 text-center">
+            <CardTitle className="text-2xl font-bold tracking-tight">
+              Verify your email
+            </CardTitle>
 
-              <CardDescription className="text-sm leading-6 text-gray-500 dark:text-zinc-400">
-                We sent a 6-digit verification code to
-                <span className="block font-semibold text-gray-900 dark:text-zinc-100">
-                  {email}
-                </span>
-              </CardDescription>
-            </CardHeader>
+            <CardDescription className="text-sm leading-6 text-gray-500 dark:text-zinc-400">
+              We sent a 6-digit verification code to
+              <span className="block font-semibold text-gray-900 dark:text-zinc-100">
+                {email}
+              </span>
+            </CardDescription>
+          </CardHeader>
 
-            <CardContent>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <div className="flex justify-center gap-2 sm:gap-3">
-                  {Array.from({ length: 6 }).map((_, index) => (
-                    <Input
-                      key={index}
-                      ref={(element) => {
-                        inputRefs.current[index] = element;
-                      }}
-                      value={otp[index] ?? ""}
-                      onChange={(event) =>
-                        handleOtpChange(index, event.target.value)
-                      }
-                      onKeyDown={(event) => handleKeyDown(index, event)}
-                      inputMode="numeric"
-                      maxLength={1}
-                      className="h-12 w-11 rounded-xl border-gray-200 bg-gray-50 text-center text-lg font-bold focus-visible:border-blue-600 focus-visible:ring-blue-600/20 sm:h-14 sm:w-12 dark:border-zinc-700 dark:bg-zinc-950 dark:focus-visible:border-blue-500 dark:focus-visible:ring-blue-500/20"
-                    />
-                  ))}
-                </div>
+          <CardContent>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div className="flex justify-center gap-2 sm:gap-3">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <Input
+                    key={index}
+                    ref={(element) => {
+                      inputRefs.current[index] = element;
+                    }}
+                    value={otp[index] ?? ""}
+                    onChange={(event) =>
+                      handleOtpChange(index, event.target.value)
+                    }
+                    onKeyDown={(event) => handleKeyDown(index, event)}
+                    inputMode="numeric"
+                    maxLength={1}
+                    className="h-12 w-11 rounded-xl border-gray-200 bg-gray-50 text-center text-lg font-bold focus-visible:border-blue-600 focus-visible:ring-blue-600/20 sm:h-14 sm:w-12 dark:border-zinc-700 dark:bg-zinc-950 dark:focus-visible:border-blue-500 dark:focus-visible:ring-blue-500/20"
+                  />
+                ))}
+              </div>
 
-                {errors.otp && (
-                  <p className="text-center text-xs text-red-600 dark:text-red-400">
-                    {errors.otp.message}
+              {errors.otp && (
+                <p className="text-center text-xs text-red-600 dark:text-red-400">
+                  {errors.otp.message}
+                </p>
+              )}
+
+              <Button
+                type="submit"
+                disabled={isSubmitting || otp.length !== 6}
+                className="h-11 w-full cursor-pointer rounded-xl bg-blue-800 font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-blue-900 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:hover:bg-blue-700"
+              >
+                {isSubmitting ? "Verifying..." : "Verify code"}
+              </Button>
+
+              <div className="space-y-3 text-center">
+                {countdown > 0 ? (
+                  <p className="text-xs text-gray-500 dark:text-zinc-400">
+                    You can request a new code in{" "}
+                    <span className="font-semibold text-gray-900 dark:text-zinc-100">
+                      {countdown}s
+                    </span>
                   </p>
-                )}
-
-                <Button
-                  type="submit"
-                  disabled={isSubmitting || otp.length !== 6}
-                  className="h-11 w-full cursor-pointer rounded-xl bg-blue-800 font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-blue-900 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:hover:bg-blue-700"
-                >
-                  {isSubmitting ? "Verifying..." : "Verify code"}
-                </Button>
-
-                <div className="space-y-3 text-center">
-                  {countdown > 0 ? (
-                    <p className="text-xs text-gray-500 dark:text-zinc-400">
-                      You can request a new code in{" "}
-                      <span className="font-semibold text-gray-900 dark:text-zinc-100">
-                        {countdown}s
-                      </span>
-                    </p>
-                  ) : (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      onClick={handleResend}
-                      disabled={isResending}
-                      className="cursor-pointer text-sm font-semibold text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                    >
-                      {isResending ? "Sending..." : "Resend verification code"}
-                    </Button>
-                  )}
-
+                ) : (
                   <Button
                     type="button"
                     variant="ghost"
-                    onClick={() => router.back()}
-                    className="gap-2 text-xs text-gray-500 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                    onClick={handleResend}
+                    disabled={isResending}
+                    className="cursor-pointer text-sm font-semibold text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                   >
-                    <ArrowLeft className="h-3.5 w-3.5" />
-                    Change email
+                    {isResending ? "Sending..." : "Resend verification code"}
                   </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-    </main>
+                )}
+
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => router.back()}
+                  className="gap-2 text-xs text-gray-500 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  Change email
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
   );
 }
 

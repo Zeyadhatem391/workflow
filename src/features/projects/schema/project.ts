@@ -19,18 +19,9 @@ export const AddProject = z.object({
         .string()
         .min(1, "Due date is required"),
 
-    status: z.enum([
-        "planning",
-        "active",
-        "completed",
-        "on-hold",
-    ]),
+    status: z.string(),
 
-    priority: z.enum([
-        "low",
-        "medium",
-        "high",
-    ]),
+    priority: z.string(),
 
     admin: z
         .string()

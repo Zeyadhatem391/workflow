@@ -23,19 +23,9 @@ export const AddTask = z.object({
         .string()
         .min(1, "Due date is required"),
 
-    priority: z.enum(
-        ["low", "medium", "high"],
-        {
-            message: "Priority is required",
-        }
-    ),
+    priority: z.string(),
 
-    status: z.enum(
-        ["todo", "in-progress", "review", "done"],
-        {
-            message: "Status is required",
-        }
-    ),
+    status: z.string(),
 });
 
 export type AddTaskInput = z.infer<typeof AddTask>;

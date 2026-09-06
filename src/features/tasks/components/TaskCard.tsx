@@ -28,7 +28,7 @@ function TaskCard({ task }: Props) {
     transition,
   };
 
-  const priorityStyles = {
+  const priorityStyles: Record<string, string> = {
     low: "bg-green-500/10 text-green-600 dark:bg-green-500/10 dark:text-green-400",
     medium:
       "bg-orange-500/10 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400",
@@ -77,7 +77,10 @@ function TaskCard({ task }: Props) {
               shrink-0 rounded-full
               px-2.5 py-1
               text-[11px] font-semibold capitalize
-              ${priorityStyles[task.priority]}
+              ${
+                priorityStyles[task.priority] ??
+                "bg-gray-500/10 text-gray-600 dark:bg-gray-500/10 dark:text-gray-400"
+              }
             `}
           >
             {task.priority}

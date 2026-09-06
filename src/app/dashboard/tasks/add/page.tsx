@@ -21,9 +21,24 @@ import { AddTask, AddTaskInput } from "@/features/tasks/schema/task";
 import { Textarea } from "@/components/ui/textarea";
 import { useTaskStore } from "@/features/tasks/store/task.store";
 import { Task } from "@/features/tasks/types/task";
+import { useTaskStatusStore } from "@/features/tasks/store/statusTasks.store";
+import { useTasksPriorityStore } from "@/features/tasks/store/priorityTasks.store";
+import { getCurrentUser } from "@/features/auth/helper/auth";
 
 function page() {
   const router = useRouter();
+
+  const user = getCurrentUser();
+
+  if (!user) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <p className="text-sm text-muted-foreground">
+          Please log in to perform any activities.
+        </p>
+      </div>
+    );
+  }
 
   const {
     register,
@@ -35,8 +50,8 @@ function page() {
     resolver: zodResolver(AddTask),
     mode: "all",
     defaultValues: {
-      status: "in-progress",
-      priority: "medium",
+      status: "",
+      priority: "",
     },
   });
 
@@ -65,6 +80,9 @@ function page() {
 
   const addTask = useTaskStore((state) => state.addTask);
 
+  const taskStatus = useTaskStatusStore((state) => state.statuses);
+  const priorities = useTasksPriorityStore((state) => state.priorities);
+
   const onSubmit = async (data: AddTaskInput) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -82,6 +100,8 @@ function page() {
       assigneeId: data.assigneeId,
       projectId: data.projectId,
 
+      userId: user.id,
+
       createdAt: new Date().toISOString(),
     };
 
@@ -92,16 +112,8 @@ function page() {
   const projects = useProjectStore((state) => state.projects);
 
   return (
-    <div className="flex w-full justify-center">
-      <div
-        className="
-        w-full max-w-3xl
-        rounded-2xl border border-border
-        bg-card
-        px-4 py-5 shadow-sm
-        sm:px-6 sm:py-7
-      "
-      >
+    <div className="flex w-full justify-center px-3 py-4 sm:px-5 sm:py-6 lg:px-6">
+      <div className="w-full max-w-3xl rounded-xl bg-white p-4 shadow-sm dark:bg-zinc-900 sm:p-6 lg:p-7">
         <div className="space-y-5">
           {/* Header */}
           <div>
@@ -131,14 +143,7 @@ function page() {
                   type="text"
                   {...register("title")}
                   placeholder="Enter task title"
-                  className="
-                  h-11 rounded-xl
-                  border-border
-                  bg-muted/40
-                  text-foreground
-                  placeholder:text-muted-foreground
-                  focus-visible:ring-1
-                "
+                  className="h-10 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus-visible:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                 />
 
                 {errors.title && (
@@ -166,13 +171,7 @@ function page() {
                     dueDateRef.current = element;
                   }}
                   onClick={() => dueDateRef.current?.showPicker()}
-                  className="
-                  h-11 rounded-xl
-                  border-border
-                  bg-muted/40
-                  text-foreground
-                  focus-visible:ring-1
-                "
+                  className="h-10 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus-visible:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                 />
 
                 {errors.dueDate && (
@@ -183,9 +182,7 @@ function page() {
               </div>
             </div>
 
-            {/* Status + Priority */}
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              {/* Status */}
               <Controller
                 name="status"
                 control={control}
@@ -193,7 +190,7 @@ function page() {
                   <div className="grid gap-1.5">
                     <Label
                       htmlFor="status"
-                      className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                      className="text-xs font-semibold uppercase text-gray-500 dark:text-zinc-400"
                     >
                       Status
                     </Label>
@@ -201,32 +198,27 @@ function page() {
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger
                         id="status"
-                        className="
-                        h-11 w-full rounded-xl
-                        border-border
-                        bg-muted/40
-                        text-foreground
-                      "
+                        className="h-10 w-full rounded-xl border-gray-200 bg-gray-50 py-5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus-visible:ring-0"
                       >
-                        <SelectValue placeholder="Select status" />
+                        <SelectValue placeholder="Select Status" />
                       </SelectTrigger>
 
                       <SelectContent
                         position="popper"
                         side="bottom"
                         align="start"
-                        sideOffset={4}
-                        className="rounded-xl border-border bg-popover"
+                        className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
                       >
-                        <SelectItem value="todo">To Do</SelectItem>
-                        <SelectItem value="in-progress">In Progress</SelectItem>
-                        <SelectItem value="review">Review</SelectItem>
-                        <SelectItem value="done">Done</SelectItem>
+                        {taskStatus.map((status) => (
+                          <SelectItem key={status.id} value={status.id}>
+                            {status.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
 
                     {errors.status && (
-                      <p className="text-xs font-medium text-destructive">
+                      <p className="text-xs text-red-600 dark:text-red-400">
                         {errors.status.message}
                       </p>
                     )}
@@ -234,7 +226,6 @@ function page() {
                 )}
               />
 
-              {/* Priority */}
               <Controller
                 name="priority"
                 control={control}
@@ -242,7 +233,7 @@ function page() {
                   <div className="grid gap-1.5">
                     <Label
                       htmlFor="priority"
-                      className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                      className="text-xs font-semibold uppercase text-gray-500 dark:text-zinc-400"
                     >
                       Priority
                     </Label>
@@ -250,31 +241,27 @@ function page() {
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger
                         id="priority"
-                        className="
-                        h-11 w-full rounded-xl
-                        border-border
-                        bg-muted/40
-                        text-foreground
-                      "
+                        className="h-10 w-full rounded-xl border-gray-200 bg-gray-50 py-5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus-visible:ring-0"
                       >
-                        <SelectValue placeholder="Select priority" />
+                        <SelectValue placeholder="Select Priority" />
                       </SelectTrigger>
 
                       <SelectContent
                         position="popper"
                         side="bottom"
                         align="start"
-                        sideOffset={4}
-                        className="rounded-xl border-border bg-popover"
+                        className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
                       >
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
+                        {priorities.map((priority) => (
+                          <SelectItem key={priority.id} value={priority.id}>
+                            {priority.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
 
                     {errors.priority && (
-                      <p className="text-xs font-medium text-destructive">
+                      <p className="text-xs text-red-600 dark:text-red-400">
                         {errors.priority.message}
                       </p>
                     )}
@@ -301,12 +288,7 @@ function page() {
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger
                         id="project"
-                        className="
-                        h-11 w-full rounded-xl
-                        border-border
-                        bg-muted/40
-                        text-foreground
-                      "
+                        className="h-11 py-5 w-full rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus-visible:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                       >
                         <SelectValue placeholder="Select project" />
                       </SelectTrigger>
@@ -316,7 +298,7 @@ function page() {
                         side="bottom"
                         align="start"
                         sideOffset={4}
-                        className="rounded-xl border-border bg-popover"
+                        className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
                       >
                         {projects.map((project) => (
                           <SelectItem key={project.id} value={project.id}>
@@ -351,12 +333,7 @@ function page() {
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger
                         id="assigneeId"
-                        className="
-                        h-11 w-full rounded-xl
-                        border-border
-                        bg-muted/40
-                        text-foreground
-                      "
+                        className="h-11 py-5 w-full rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus-visible:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                       >
                         <SelectValue placeholder="Select member" />
                       </SelectTrigger>
@@ -366,7 +343,7 @@ function page() {
                         side="bottom"
                         align="start"
                         sideOffset={4}
-                        className="rounded-xl border-border bg-popover"
+                        className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
                       >
                         {users.map((user) => (
                           <SelectItem key={user.id} value={user.id}>
@@ -399,14 +376,7 @@ function page() {
                 id="description"
                 {...register("description")}
                 placeholder="Describe the task..."
-                className="
-                min-h-28 resize-none rounded-xl
-                border-border
-                bg-muted/40
-                text-foreground
-                placeholder:text-muted-foreground
-                focus-visible:ring-1
-              "
+                className="h-28 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus-visible:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
               />
 
               {errors.description && (

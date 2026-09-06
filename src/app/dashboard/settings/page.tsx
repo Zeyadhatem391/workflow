@@ -5,6 +5,7 @@ import { User, ListTodo, FolderKanban, Info } from "lucide-react";
 import TaskCategorySection from "@/features/settings/components/TaskCategorySection";
 import ProjectCategorySection from "@/features/settings/components/ProjectCategorySection";
 import ProfileSection from "@/features/settings/components/ProfileSection";
+import { getCurrentUser } from "@/features/auth/helper/auth";
 
 type SettingsTab = "profile" | "taskCategory" | "projectCategory" | "info";
 
@@ -33,6 +34,18 @@ const tabs = [
 
 function Page() {
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
+
+  const user = getCurrentUser();
+
+  if (!user) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <p className="text-sm text-muted-foreground">
+          Please log in to perform any activities.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6 rounded-xl bg-white p-5 shadow-sm dark:bg-zinc-900 sm:p-6">
