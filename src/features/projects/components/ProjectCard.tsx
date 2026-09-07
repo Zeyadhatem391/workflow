@@ -11,6 +11,7 @@ import { formatDate } from "@/shared/components/FormatDate";
 import Link from "next/link";
 import { useTaskStore } from "@/features/tasks/store/task.store";
 import { calculateProjectProgress } from "../helper/calculateProjectProgress";
+import { useUserStore } from "@/features/auth/store/register.store";
 
 interface Props {
   project: Project;
@@ -44,6 +45,10 @@ function ProjectCard({ project }: Props) {
   const completedTasks = tasks.filter((task) => task.status === "done").length;
 
   const progress = calculateProjectProgress(tasks.length, completedTasks);
+
+  const getUserById = useUserStore((state) => state.getUserById);
+
+  const admin = getUserById(project.admin);
 
   return (
     <Link href={`/dashboard/projects/${project.id}`} className="block h-full">
@@ -195,7 +200,7 @@ function ProjectCard({ project }: Props) {
               </p>
 
               <p className="truncate text-xs font-medium text-gray-800 sm:text-sm dark:text-zinc-200">
-                {project.admin}
+                {admin?.name}
               </p>
             </div>
           </div>

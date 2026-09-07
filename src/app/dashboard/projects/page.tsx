@@ -1,28 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { getCurrentUser } from "@/features/auth/helper/auth";
 import Projects from "@/features/projects/components/Projects";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 
 function Page() {
-  const user = getCurrentUser();
-  
-    if (!user) {
-      return (
-        <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-sm text-muted-foreground">
-            Please log in to perform any activities.
-          </p>
-        </div>
-      );
-    }
   return (
     <div className="space-y-5 sm:space-y-6">
-
-
-  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
             Projects

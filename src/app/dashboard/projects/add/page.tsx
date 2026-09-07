@@ -31,6 +31,7 @@ import { Project } from "@/features/projects/types/project";
 import { useProjectStatusStore } from "@/features/projects/store/statusProject.store";
 import { useProjectPriorityStore } from "@/features/projects/store/priorityProject.store";
 import { getCurrentUser } from "@/features/auth/helper/auth";
+import { useUserStore } from "@/features/auth/store/register.store";
 
 function page() {
   const router = useRouter();
@@ -60,6 +61,7 @@ function page() {
       status: "",
       priority: "",
       membersList: [],
+      admin: "",
     },
   });
   const startDateRef = useRef<HTMLInputElement | null>(null);
@@ -94,7 +96,7 @@ function page() {
       members: data.membersList.length,
       membersList: data.membersList,
 
-      userId:user.id,
+      userId: user.id,
 
       createdAt: new Date().toISOString(),
     };
@@ -102,7 +104,10 @@ function page() {
     addProject(newProject);
 
     reset();
+    router.push("/dashboard/projects");
   };
+
+  const users = useUserStore((state) => state.users);
 
   return (
     <div className="flex w-full justify-center px-3 py-4 sm:px-5 sm:py-6 lg:px-6">
@@ -251,10 +256,14 @@ function page() {
                         position="popper"
                         side="bottom"
                         align="start"
-                        className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+                        className="rounded-xl p-1 border-gray-200 bg-white dark:border-zinc-700 ring-0 dark:bg-zinc-900"
                       >
                         {projectStatus.map((status) => (
-                          <SelectItem key={status.id} value={status.id}>
+                          <SelectItem
+                            key={status.id}
+                            value={status.id}
+                            className="p-2 dark:hover:bg-gray-300/10 hover:bg-gray-800/10 cursor-pointer"
+                          >
                             {status.name}
                           </SelectItem>
                         ))}
@@ -294,10 +303,14 @@ function page() {
                         position="popper"
                         side="bottom"
                         align="start"
-                        className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+                        className="rounded-xl p-1 border-gray-200 bg-white dark:border-zinc-700 ring-0 dark:bg-zinc-900"
                       >
                         {priorities.map((priority) => (
-                          <SelectItem key={priority.id} value={priority.id}>
+                          <SelectItem
+                            key={priority.id}
+                            value={priority.id}
+                            className="p-2 dark:hover:bg-gray-300/10 hover:bg-gray-800/10 cursor-pointer"
+                          >
                             {priority.name}
                           </SelectItem>
                         ))}
@@ -339,10 +352,17 @@ function page() {
                         position="popper"
                         side="bottom"
                         align="start"
-                        className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+                        className="rounded-xl p-1 border-gray-200 bg-white dark:border-zinc-700 ring-0 dark:bg-zinc-900"
                       >
-                        <SelectItem value="zeyad">Zeyad</SelectItem>
-                        <SelectItem value="ali">Ali</SelectItem>
+                        {users.map((user) => (
+                          <SelectItem
+                            key={user.id}
+                            value={user.id}
+                            className="p-2 dark:hover:bg-gray-300/10 hover:bg-gray-800/10 cursor-pointer"
+                          >
+                            {user.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
 
@@ -393,15 +413,10 @@ function page() {
                         align="start"
                         side="bottom"
                         sideOffset={4}
-                        className="w-(--radix-popover-trigger-width) rounded-xl border-gray-200 bg-white p-2 dark:border-zinc-700 dark:bg-zinc-900"
+                        className="w-(--radix-popover-trigger-width) rounded-xl ring-0 border-gray-200 bg-white p-2 dark:border-zinc-700 dark:bg-zinc-900"
                       >
                         <div className="space-y-1">
-                          {[
-                            { id: "zeyad", name: "Zeyad" },
-                            { id: "ahmed", name: "Ahmed" },
-                            { id: "mohamed", name: "Mohamed" },
-                            { id: "ali", name: "Ali" },
-                          ].map((member) => {
+                          {users.map((member) => {
                             const isSelected = field.value.includes(member.id);
 
                             return (
@@ -420,7 +435,7 @@ function page() {
                               >
                                 <Checkbox
                                   checked={isSelected}
-                                  className="text-white border border-gray-800 dark:border-gray-100"
+                                  className="text-white border border-gray-800 dark:border-gray-800"
                                 />
 
                                 <span className="text-sm font-medium">

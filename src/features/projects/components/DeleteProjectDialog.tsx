@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { useProjectStore } from "../store/project.store";
+import { useRouter } from "next/navigation";
 
 interface DeleteProjectDialogProps {
   open: boolean;
@@ -24,16 +25,18 @@ function DeleteProjectDialog({
   onOpenChange,
   projectId,
 }: DeleteProjectDialogProps) {
+  const router = useRouter();
   const removeProject = useProjectStore((state) => state.removeProject);
 
   const handleDelete = () => {
     removeProject(projectId);
     onOpenChange(false);
+    router.push("/dashboard/projects");
   };
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="rounded-2xl border dark:border-zinc-800 dark:bg-zinc-900  border-gray-200/70 bg-white">
+      <AlertDialogContent className="rounded-2xl ring-0 border dark:border-zinc-800 dark:bg-zinc-900 border-gray-200/70 bg-white">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-foreground">
             Are you sure you want to delete this project?

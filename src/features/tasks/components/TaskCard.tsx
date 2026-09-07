@@ -6,6 +6,7 @@ import { CalendarDays, Clock3, User } from "lucide-react";
 import Link from "next/link";
 
 import { Task } from "../types/task";
+import { formatDate } from "@/shared/components/FormatDate";
 
 interface Props {
   task: Task;
@@ -99,7 +100,7 @@ function TaskCard({ task }: Props) {
           <span className="truncate">
             Due{" "}
             <span className="font-medium text-gray-700 dark:text-zinc-300">
-              {task.dueDate}
+              {formatDate(task.dueDate)}
             </span>
           </span>
         </div>

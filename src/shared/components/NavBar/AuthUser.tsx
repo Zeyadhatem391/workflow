@@ -54,7 +54,7 @@ function AuthUser() {
           asChild
           className="cursor-pointer focus:bg-menu-hover-bg focus:text-app-icon-hover"
         >
-          <Link href="/profile" className="w-full">
+          <Link href="/dashboard/settings?tab=profile" className="w-full">
             Profile
           </Link>
         </DropdownMenuItem>

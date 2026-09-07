@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { User, ListTodo, FolderKanban, Info } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+
 import TaskCategorySection from "@/features/settings/components/TaskCategorySection";
 import ProjectCategorySection from "@/features/settings/components/ProjectCategorySection";
 import ProfileSection from "@/features/settings/components/ProfileSection";
@@ -33,13 +34,25 @@ const tabs = [
 ];
 
 function Page() {
-  const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const user = getCurrentUser();
+
+  const tabParam = searchParams.get("tab");
+
+  const activeTab: SettingsTab = tabs.some((tab) => tab.id === tabParam)
+    ? (tabParam as SettingsTab)
+    : "profile";
+
+  const handleTabChange = (tab: SettingsTab) => {
+    router.push(`/dashboard/settings?tab=${tab}`);
+  };
 
   if (!user) {
     return (
       <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        
         <p className="text-sm text-muted-foreground">
           Please log in to perform any activities.
         </p>
@@ -49,18 +62,16 @@ function Page() {
 
   return (
     <div className="flex flex-col gap-6 rounded-xl bg-white p-5 shadow-sm dark:bg-zinc-900 sm:p-6">
-      {/* Header */}
+      
       <div>
+        
         <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
           Settings
         </h1>
-
         <p className="mt-1 text-sm text-muted-foreground">
           Manage your application settings
         </p>
       </div>
-
-      {/* Tabs */}
       <div className="border-t border-gray-200 pt-5 dark:border-zinc-800">
         <div className="overflow-x-auto">
           <div className="flex min-w-max gap-1 rounded-lg bg-gray-100 p-1 dark:bg-zinc-800">
@@ -72,16 +83,16 @@ function Page() {
                 <button
                   key={tab.id}
                   type="button"
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => handleTabChange(tab.id)}
                   className={`
-                    flex items-center gap-2 rounded-md px-4 py-2.5
-                    text-sm font-medium transition-all duration-200
-                    ${
-                      isActive
-                        ? "bg-white text-blue-700 shadow-sm dark:bg-zinc-900 dark:text-blue-400"
-                        : "text-gray-600 hover:bg-white/70 hover:text-gray-900 dark:text-zinc-400 dark:hover:bg-zinc-900/70 dark:hover:text-zinc-100"
-                    }
-                  `}
+                flex items-center gap-2 rounded-md px-4 py-2.5
+                text-sm font-medium transition-all duration-200
+                ${
+                  isActive
+                    ? "bg-white text-blue-700 shadow-sm dark:bg-zinc-900 dark:text-blue-400"
+                    : "text-gray-600 hover:bg-white/70 hover:text-gray-900 dark:text-zinc-400 dark:hover:bg-zinc-900/70 dark:hover:text-zinc-100"
+                }
+              `}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
 
@@ -92,8 +103,6 @@ function Page() {
           </div>
         </div>
       </div>
-
-      {/* Content */}
       <div className="border-t border-gray-200 pt-6 dark:border-zinc-800">
         {activeTab === "profile" && <ProfileSection />}
 
@@ -104,11 +113,10 @@ function Page() {
         {activeTab === "info" && (
           <div>
             <h2 className="text-lg font-semibold">Information</h2>
+
             <p className="mt-1 text-sm text-muted-foreground">
               View application information.
             </p>
-
-            {/* Info content */}
           </div>
         )}
       </div>

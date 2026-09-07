@@ -19,6 +19,7 @@ import { Project } from "../types/project";
 import { Task } from "@/features/tasks/types/task";
 import DeleteProjectDialog from "./DeleteProjectDialog";
 import { calculateProjectProgress } from "../helper/calculateProjectProgress";
+import { useUserStore } from "@/features/auth/store/register.store";
 
 function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -40,19 +41,18 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
 
   const progress = calculateProjectProgress(tasks.length, completedTasks);
 
+  const getUserById = useUserStore((state) => state.getUserById);
+
+  const admin = getUserById(project.admin);
+
   return (
     <section className="rounded-2xl border p-4 shadow-sm sm:p-5 dark:border-zinc-800 dark:bg-zinc-900  border-gray-200/70 bg-white">
-      {/* Header */}{" "}
       <div className="border-b border-gray-200 dark:border-gray-800 pb-5">
-        {" "}
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          {/* Project Info */}{" "}
           <div className="min-w-0 flex-1">
-            {" "}
             <div className="mb-2.5 flex flex-wrap items-center gap-2">
-              {" "}
               <h1 className="min-w-0 max-w-full truncate text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-                {project.title}{" "}
+                {project.title}
               </h1>
               <span
                 className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${
@@ -75,7 +75,6 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
               {project.description}
             </p>
           </div>
-          {/* Actions */}
           <div className="flex w-full gap-2 sm:w-auto">
             <Button
               size="sm"
@@ -111,9 +110,7 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
           </div>
         </div>
       </div>
-      {/* Progress + Stats */}
       <div className="grid gap-5 border-b border-gray-200 dark:border-gray-800 py-5 lg:grid-cols-[1fr_auto] lg:items-center">
-        {/* Progress */}
         <div className="min-w-0">
           <div className="mb-2 flex items-center justify-between">
             <span className="text-sm font-semibold text-foreground sm:text-[15px]">
@@ -135,7 +132,6 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
           </div>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-3 gap-4 sm:flex sm:gap-7">
           <div className="flex items-start gap-2">
             <ListTodo className="hidden h-5 w-5 text-muted-foreground sm:block" />
@@ -178,9 +174,7 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
           </div>
         </div>
       </div>
-      {/* Project Details */}
       <div className="grid gap-5 py-5 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Start Date */}
         <div className="flex min-w-0 items-start gap-3">
           <CalendarDays className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
 
@@ -195,7 +189,6 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
           </div>
         </div>
 
-        {/* Due Date */}
         <div className="flex min-w-0 items-start gap-3">
           <CalendarDays className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
 
@@ -210,7 +203,6 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
           </div>
         </div>
 
-        {/* Admin */}
         <div className="flex min-w-0 items-start gap-3">
           <UserRound className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
 
@@ -220,12 +212,11 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
             </p>
 
             <p className="truncate text-sm font-semibold capitalize text-foreground sm:text-[15px]">
-              {project.admin}
+              {admin?.name}
             </p>
           </div>
         </div>
 
-        {/* Team */}
         <div className="flex min-w-0 items-start gap-3">
           <Users className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
 
@@ -254,9 +245,8 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
           </div>
         </div>
       </div>
-      {/* Created */}
       <div className="border-t border-gray-200 dark:border-gray-800 pt-4 text-xs text-muted-foreground sm:text-sm">
-        Created {formatDate(project.createdAt)}
+        Created :  {formatDate(project.createdAt)}
       </div>
     </section>
   );

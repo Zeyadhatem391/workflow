@@ -9,6 +9,7 @@ interface RegisterStore {
   login: (email: string, password: string) => AddUserInput | null;
   findUserByEmail: (email: string) => AddUserInput | null;
   updatePassword: (email: string, newPassword: string) => boolean;
+  getUserById: (id: string) => AddUserInput | undefined;
 
 
   resetOtp: {
@@ -99,6 +100,12 @@ export const useUserStore = create<RegisterStore>()(
         set({
           resetOtp: null,
         }),
+
+
+      getUserById: (id) =>
+        get().users.find(
+          (user) => user.id === id
+        ),
     }),
     {
       name: "auth-storage",

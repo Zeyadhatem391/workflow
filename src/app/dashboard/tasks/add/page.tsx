@@ -52,6 +52,8 @@ function page() {
     defaultValues: {
       status: "",
       priority: "",
+      projectId: "",
+      assigneeId: "",
     },
   });
 
@@ -115,7 +117,6 @@ function page() {
     <div className="flex w-full justify-center px-3 py-4 sm:px-5 sm:py-6 lg:px-6">
       <div className="w-full max-w-3xl rounded-xl bg-white p-4 shadow-sm dark:bg-zinc-900 sm:p-6 lg:p-7">
         <div className="space-y-5">
-          {/* Header */}
           <div>
             <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
               Add Task
@@ -127,9 +128,7 @@ function page() {
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            {/* Title + Due Date */}
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              {/* Title */}
               <div className="grid gap-1.5">
                 <Label
                   htmlFor="title"
@@ -147,13 +146,12 @@ function page() {
                 />
 
                 {errors.title && (
-                  <p className="text-xs font-medium text-destructive">
+                  <p className="text-xs text-red-600 dark:text-red-400">
                     {errors.title.message}
                   </p>
                 )}
               </div>
 
-              {/* Due Date */}
               <div className="grid gap-1.5">
                 <Label
                   htmlFor="duedate"
@@ -175,7 +173,7 @@ function page() {
                 />
 
                 {errors.dueDate && (
-                  <p className="text-xs font-medium text-destructive">
+                  <p className="text-xs text-red-600 dark:text-red-400">
                     {errors.dueDate.message}
                   </p>
                 )}
@@ -207,10 +205,14 @@ function page() {
                         position="popper"
                         side="bottom"
                         align="start"
-                        className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+                        className="rounded-xl p-1 border-gray-200 bg-white dark:border-zinc-700 ring-0 dark:bg-zinc-900"
                       >
                         {taskStatus.map((status) => (
-                          <SelectItem key={status.id} value={status.id}>
+                          <SelectItem
+                            key={status.id}
+                            value={status.id}
+                            className="p-2 dark:hover:bg-gray-300/10 hover:bg-gray-800/10 cursor-pointer"
+                          >
                             {status.name}
                           </SelectItem>
                         ))}
@@ -250,10 +252,14 @@ function page() {
                         position="popper"
                         side="bottom"
                         align="start"
-                        className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+                        className="rounded-xl p-1 border-gray-200 bg-white dark:border-zinc-700 ring-0 dark:bg-zinc-900"
                       >
                         {priorities.map((priority) => (
-                          <SelectItem key={priority.id} value={priority.id}>
+                          <SelectItem
+                            key={priority.id}
+                            value={priority.id}
+                            className="p-2 dark:hover:bg-gray-300/10 hover:bg-gray-800/10 cursor-pointer"
+                          >
                             {priority.name}
                           </SelectItem>
                         ))}
@@ -270,9 +276,7 @@ function page() {
               />
             </div>
 
-            {/* Project + Assignee */}
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              {/* Project */}
               <Controller
                 name="projectId"
                 control={control}
@@ -298,10 +302,14 @@ function page() {
                         side="bottom"
                         align="start"
                         sideOffset={4}
-                        className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+                        className="rounded-xl p-1 border-gray-200 bg-white dark:border-zinc-700 ring-0 dark:bg-zinc-900"
                       >
                         {projects.map((project) => (
-                          <SelectItem key={project.id} value={project.id}>
+                          <SelectItem
+                            key={project.id}
+                            value={project.id}
+                            className="p-2 dark:hover:bg-gray-300/10 hover:bg-gray-800/10 cursor-pointer"
+                          >
                             {project.title}
                           </SelectItem>
                         ))}
@@ -309,7 +317,7 @@ function page() {
                     </Select>
 
                     {errors.projectId && (
-                      <p className="text-xs font-medium text-destructive">
+                      <p className="text-xs text-red-600 dark:text-red-400">
                         {errors.projectId.message}
                       </p>
                     )}
@@ -317,7 +325,6 @@ function page() {
                 )}
               />
 
-              {/* Assignee */}
               <Controller
                 name="assigneeId"
                 control={control}
@@ -343,10 +350,14 @@ function page() {
                         side="bottom"
                         align="start"
                         sideOffset={4}
-                        className="rounded-xl border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+                        className="rounded-xl p-1 border-gray-200 bg-white dark:border-zinc-700 ring-0 dark:bg-zinc-900"
                       >
                         {users.map((user) => (
-                          <SelectItem key={user.id} value={user.id}>
+                          <SelectItem
+                            key={user.id}
+                            value={user.id}
+                            className="p-2 dark:hover:bg-gray-300/10 hover:bg-gray-800/10 cursor-pointer"
+                          >
                             {user.name}
                           </SelectItem>
                         ))}
@@ -354,7 +365,7 @@ function page() {
                     </Select>
 
                     {errors.assigneeId && (
-                      <p className="text-xs font-medium text-destructive">
+                      <p className="text-xs text-red-600 dark:text-red-400">
                         {errors.assigneeId.message}
                       </p>
                     )}
@@ -363,7 +374,6 @@ function page() {
               />
             </div>
 
-            {/* Description */}
             <div className="grid gap-1.5">
               <Label
                 htmlFor="description"
@@ -380,17 +390,16 @@ function page() {
               />
 
               {errors.description && (
-                <p className="text-xs font-medium text-destructive">
+                <p className="text-xs text-red-600 dark:text-red-400">
                   {errors.description.message}
                 </p>
               )}
             </div>
 
-            {/* Actions */}
             <div
               className="
               flex flex-col-reverse gap-3
-              border-t border-border pt-5
+              border-t border-gray-200 dark:border-zinc-700 pt-5
               sm:flex-row sm:justify-end
             "
             >

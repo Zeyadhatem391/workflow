@@ -19,7 +19,6 @@ export interface Project {
   membersList?: string[];
 
 
-
   createdAt: string;
 
 }
