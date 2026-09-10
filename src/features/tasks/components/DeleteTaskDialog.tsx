@@ -11,29 +11,29 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import { useProjectStore } from "../store/project.store";
 import { useRouter } from "next/navigation";
 import { Activity } from "@/features/activity/types/activity";
 import { useActivityStore } from "@/features/activity/store/activity.store";
+import { useTaskStore } from "../store/task.store";
 import { getCurrentUser } from "@/features/auth/helper/auth";
 
-interface DeleteProjectDialogProps {
+interface DeleteTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  projectId: string;
+  taskId: string;
 }
 
-function DeleteProjectDialog({
+function DeleteTaskDialog({
   open,
   onOpenChange,
-  projectId,
-}: DeleteProjectDialogProps) {
+  taskId,
+}: DeleteTaskDialogProps) {
   const router = useRouter();
-  const removeProject = useProjectStore((state) => state.removeProject);
+  const removeTask = useTaskStore((state) => state.removeTask);
 
   const addActivity = useActivityStore((state) => state.addActivity);
 
-  const getProject = useProjectStore((state) => state.getProjectById);
+  const getTask = useTaskStore((state) => state.getTaskById);
 
   const user = getCurrentUser();
 
@@ -47,9 +47,9 @@ function DeleteProjectDialog({
     );
   }
 
-  const project = getProject(projectId);
+  const task = getTask(taskId);
 
-  if (!project) {
+  if (!task) {
     return (
       <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
         <p className="text-sm text-muted-foreground">error</p>
@@ -60,9 +60,9 @@ function DeleteProjectDialog({
   const handleDelete = () => {
     const newActivity: Activity = {
       id: crypto.randomUUID(),
-      type: "project-deleted",
-      title: project.title,
-      description: "The project has been successfully deleted.",
+      type: "task-deleted",
+      title: task.title,
+      description: "The task has been successfully deleted.",
       time: new Date().toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "2-digit",
@@ -72,10 +72,10 @@ function DeleteProjectDialog({
     };
 
     addActivity(newActivity);
-    removeProject(projectId);
+    removeTask(taskId);
 
     onOpenChange(false);
-    router.push("/dashboard/projects");
+    router.push("/dashboard/tasks");
   };
 
   return (
@@ -83,11 +83,11 @@ function DeleteProjectDialog({
       <AlertDialogContent className="rounded-2xl ring-0 border dark:border-zinc-800 dark:bg-zinc-900 border-gray-200/70 bg-white">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-foreground">
-            Are you sure you want to delete this project?
+            Are you sure you want to delete this task?
           </AlertDialogTitle>
 
           <AlertDialogDescription className="text-muted-foreground">
-            This action cannot be undone. The project and its data will be
+            This action cannot be undone. The task and its data will be
             permanently removed.
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -109,4 +109,4 @@ function DeleteProjectDialog({
   );
 }
 
-export default DeleteProjectDialog;
+export default DeleteTaskDialog;

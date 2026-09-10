@@ -3,11 +3,9 @@
 import {
   UserPlus,
   MessageCircle,
-  FolderKanban,
   Search,
   UserCheck,
   Users,
-  Plus,
 } from "lucide-react";
 
 const newUsers = [
@@ -33,43 +31,16 @@ const friends = [
     id: 1,
     name: "Mohamed Hassan",
     email: "mohamed@example.com",
-    projects: 3,
   },
   {
     id: 2,
     name: "Youssef Ahmed",
     email: "youssef@example.com",
-    projects: 2,
   },
   {
     id: 3,
     name: "Mariam Adel",
     email: "mariam@example.com",
-    projects: 4,
-  },
-];
-
-const projects = [
-  {
-    id: 1,
-    name: "WorkFlow",
-    description: "Project and task management platform.",
-    members: ["Mohamed Hassan", "Youssef Ahmed", "Mariam Adel"],
-    membersCount: 3,
-  },
-  {
-    id: 2,
-    name: "Task Manager",
-    description: "Simple task management application.",
-    members: ["Mohamed Hassan", "Mariam Adel"],
-    membersCount: 2,
-  },
-  {
-    id: 3,
-    name: "Portfolio",
-    description: "Personal portfolio website.",
-    members: ["Youssef Ahmed"],
-    membersCount: 1,
   },
 ];
 
@@ -85,7 +56,6 @@ function getInitials(name: string) {
 function Page() {
   return (
     <div className="flex flex-col gap-6 rounded-xl bg-white p-5 shadow-sm dark:bg-zinc-900 sm:p-6">
-      {/* Header */}
       <div>
         <div className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
@@ -103,7 +73,6 @@ function Page() {
         </p>
       </div>
 
-      {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 
@@ -114,7 +83,6 @@ function Page() {
         />
       </div>
 
-      {/* New Users */}
       <section className="rounded-xl border border-gray-200 dark:border-zinc-800">
         <div className="flex items-center justify-between gap-3 border-b border-gray-200 p-4 dark:border-zinc-800 sm:p-5">
           <div>
@@ -133,12 +101,10 @@ function Page() {
         <div className="divide-y divide-gray-100 dark:divide-zinc-800">
           {newUsers.map((user) => (
             <div key={user.id} className="flex items-center gap-3 p-4 sm:p-5">
-              {/* Avatar */}
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700 dark:bg-blue-950/50 dark:text-blue-400">
                 {getInitials(user.name)}
               </div>
 
-              {/* User info */}
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-foreground">
                   {user.name}
@@ -149,7 +115,6 @@ function Page() {
                 </p>
               </div>
 
-              {/* Add */}
               <button
                 type="button"
                 className="flex h-9 shrink-0 items-center gap-2 rounded-lg bg-blue-600 px-3 text-sm font-medium text-white transition hover:bg-blue-700"
@@ -163,7 +128,6 @@ function Page() {
         </div>
       </section>
 
-      {/* Friends */}
       <section className="rounded-xl border border-gray-200 dark:border-zinc-800">
         <div className="flex items-center justify-between gap-3 border-b border-gray-200 p-4 dark:border-zinc-800 sm:p-5">
           <div>
@@ -182,12 +146,10 @@ function Page() {
         <div className="divide-y divide-gray-100 dark:divide-zinc-800">
           {friends.map((friend) => (
             <div key={friend.id} className="flex items-center gap-3 p-4 sm:p-5">
-              {/* Avatar */}
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
                 {getInitials(friend.name)}
               </div>
 
-              {/* Info */}
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-foreground">
                   {friend.name}
@@ -196,126 +158,20 @@ function Page() {
                 <p className="truncate text-xs text-muted-foreground">
                   {friend.email}
                 </p>
-
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  {friend.projects} projects
-                </p>
               </div>
 
-              {/* Actions */}
-              <div className="flex shrink-0 items-center gap-1.5">
-                <button
-                  type="button"
-                  title="Assign to project"
-                  aria-label="Assign to project"
-                  className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/30 dark:hover:text-blue-400 sm:h-9 sm:w-auto sm:gap-2 sm:px-3"
-                >
-                  <FolderKanban className="h-4 w-4" />
+              <button
+                type="button"
+                title="Message"
+                aria-label="Message"
+                className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-gray-100 hover:text-foreground dark:hover:bg-zinc-800 sm:h-9 sm:w-auto sm:gap-2 sm:px-3"
+              >
+                <MessageCircle className="h-4 w-4" />
 
-                  <span className="hidden text-sm font-medium sm:inline">
-                    Assign
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  title="Message"
-                  aria-label="Message"
-                  className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-gray-100 hover:text-foreground dark:hover:bg-zinc-800 sm:h-9 sm:w-auto sm:gap-2 sm:px-3"
-                >
-                  <MessageCircle className="h-4 w-4" />
-
-                  <span className="hidden text-sm font-medium sm:inline">
-                    Message
-                  </span>
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Projects */}
-      <section className="rounded-xl border border-gray-200 dark:border-zinc-800">
-        <div className="flex items-center justify-between gap-3 border-b border-gray-200 p-4 dark:border-zinc-800 sm:p-5">
-          <div>
-            <h2 className="text-base font-semibold text-foreground">
-              Team Projects
-            </h2>
-
-            <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-              View projects and the people working on them.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white transition hover:bg-blue-700 sm:w-auto sm:gap-2 sm:px-3"
-          >
-            <Plus className="h-4 w-4" />
-
-            <span className="hidden text-sm font-medium sm:inline">
-              New Project
-            </span>
-          </button>
-        </div>
-
-        {/* Project Cards */}
-        <div className="grid gap-4 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-3">
-          {projects.map((project) => (
-            <div
-              key={project.id}
-              className="rounded-lg border border-gray-200 p-4 transition hover:border-blue-300 hover:shadow-sm dark:border-zinc-800 dark:hover:border-blue-900"
-            >
-              {/* Project Header */}
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                  <FolderKanban className="h-5 w-5" />
-                </div>
-
-                <div className="min-w-0">
-                  <h3 className="truncate text-sm font-semibold text-foreground">
-                    {project.name}
-                  </h3>
-
-                  <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">
-                    {project.description}
-                  </p>
-                </div>
-              </div>
-
-              {/* Members */}
-              <div className="mt-5">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground">
-                    Team Members
-                  </span>
-
-                  <span className="text-xs font-medium text-muted-foreground">
-                    {project.membersCount} members
-                  </span>
-                </div>
-
-                <div className="mt-3 flex items-center">
-                  {project.members.slice(0, 4).map((member, index) => (
-                    <div
-                      key={member}
-                      title={member}
-                      className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-blue-100 text-[10px] font-semibold text-blue-700 dark:border-zinc-900 dark:bg-blue-950/50 dark:text-blue-400 ${
-                        index !== 0 ? "-ml-2" : ""
-                      }`}
-                    >
-                      {getInitials(member)}
-                    </div>
-                  ))}
-
-                  {project.membersCount > 4 && (
-                    <div className="-ml-2 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gray-100 text-[10px] font-semibold text-gray-600 dark:border-zinc-900 dark:bg-zinc-800 dark:text-zinc-300">
-                      +{project.membersCount - 4}
-                    </div>
-                  )}
-                </div>
-              </div>
+                <span className="hidden text-sm font-medium sm:inline">
+                  Message
+                </span>
+              </button>
             </div>
           ))}
         </div>

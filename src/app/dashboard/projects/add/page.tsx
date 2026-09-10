@@ -32,6 +32,7 @@ import { useProjectStatusStore } from "@/features/projects/store/statusProject.s
 import { useProjectPriorityStore } from "@/features/projects/store/priorityProject.store";
 import { getCurrentUser } from "@/features/auth/helper/auth";
 import { useUserStore } from "@/features/auth/store/register.store";
+import { useActivityStore } from "@/features/activity/store/activity.store";
 
 function page() {
   const router = useRouter();
@@ -76,6 +77,8 @@ function page() {
   const projectStatus = useProjectStatusStore((state) => state.statuses);
   const priorities = useProjectPriorityStore((state) => state.priorities);
 
+  const addActivity = useActivityStore((state) => state.addActivity);
+
   const onSubmit = async (data: AddProjectInput) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -98,10 +101,24 @@ function page() {
 
       userId: user.id,
 
+
       createdAt: new Date().toISOString(),
     };
 
     addProject(newProject);
+
+    addActivity({
+      id: crypto.randomUUID(),
+      type: "project-created",
+      title: data.title,
+      description: `The project has been successfully created.`,
+      time: new Date().toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      }),
+      date: new Date().toISOString(),
+       userId:user.id,
+    });
 
     reset();
     router.push("/dashboard/projects");

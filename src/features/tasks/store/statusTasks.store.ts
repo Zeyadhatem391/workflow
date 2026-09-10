@@ -39,6 +39,9 @@ interface TaskStatusStore {
 
     removeStatus: (id: string) => void;
 
+    getStatusById: (id: string) => TaskStatus | undefined;
+
+
     initializeStatuses: () => void;
 }
 
@@ -76,6 +79,9 @@ export const useTaskStatusStore =
                                 (status) => status.id !== id
                             ),
                         })),
+
+                    getStatusById: (id) =>
+                        get().statuses.find((status) => status.id === id),
 
                     initializeStatuses: () => {
                         if (get().statuses.length === 0) {

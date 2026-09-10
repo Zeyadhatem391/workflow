@@ -20,6 +20,7 @@ import { Task } from "@/features/tasks/types/task";
 import DeleteProjectDialog from "./DeleteProjectDialog";
 import { calculateProjectProgress } from "../helper/calculateProjectProgress";
 import { useUserStore } from "@/features/auth/store/register.store";
+import Link from "next/link";
 
 function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -76,13 +77,15 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
             </p>
           </div>
           <div className="flex w-full gap-2 sm:w-auto">
-            <Button
-              size="sm"
-              className="h-9 flex-1 cursor-pointer gap-1.5 rounded-lg sm:flex-none text-white"
-            >
-              <Pencil className="h-4 w-4" />
-              <span>Edit</span>
-            </Button>
+            <Link href={`/dashboard/projects/${project.id}/update`}>
+              <Button
+                size="sm"
+                className="h-9 flex-1 cursor-pointer gap-1.5 rounded-lg sm:flex-none text-white"
+              >
+                <Pencil className="h-4 w-4" />
+                <span>Edit</span>
+              </Button>
+            </Link>
 
             <Button
               size="sm"
@@ -246,7 +249,7 @@ function ProjectInfo({ project, tasks }: { project: Project; tasks: Task[] }) {
         </div>
       </div>
       <div className="border-t border-gray-200 dark:border-gray-800 pt-4 text-xs text-muted-foreground sm:text-sm">
-        Created :  {formatDate(project.createdAt)}
+        Created : {formatDate(project.createdAt)}
       </div>
     </section>
   );

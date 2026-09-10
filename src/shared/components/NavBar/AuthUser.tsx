@@ -48,11 +48,11 @@ function AuthUser() {
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="w-48 bg-layout-bg text-app-icon-hover shadow-lg"
+        className="w-48 bg-layout-bg text-app-icon-hover ring-0 shadow-lg"
       >
         <DropdownMenuItem
           asChild
-          className="cursor-pointer focus:bg-menu-hover-bg focus:text-app-icon-hover"
+          className="cursor-pointer px-3 py-2 text-sm font-medium dark:hover:bg-gray-300/10 hover:bg-gray-100/10"
         >
           <Link href="/dashboard/settings?tab=profile" className="w-full">
             Profile
@@ -61,7 +61,6 @@ function AuthUser() {
 
         <DropdownMenuItem
           asChild
-          className="cursor-pointer p-0 focus:bg-transparent"
         >
           <LogoutButton />
         </DropdownMenuItem>

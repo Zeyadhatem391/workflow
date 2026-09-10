@@ -7,6 +7,7 @@ import TaskCategorySection from "@/features/settings/components/TaskCategorySect
 import ProjectCategorySection from "@/features/settings/components/ProjectCategorySection";
 import ProfileSection from "@/features/settings/components/ProfileSection";
 import { getCurrentUser } from "@/features/auth/helper/auth";
+import InformationSection from "@/features/settings/components/InformationSection";
 
 type SettingsTab = "profile" | "taskCategory" | "projectCategory" | "info";
 
@@ -52,7 +53,6 @@ function Page() {
   if (!user) {
     return (
       <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-        
         <p className="text-sm text-muted-foreground">
           Please log in to perform any activities.
         </p>
@@ -62,9 +62,7 @@ function Page() {
 
   return (
     <div className="flex flex-col gap-6 rounded-xl bg-white p-5 shadow-sm dark:bg-zinc-900 sm:p-6">
-      
       <div>
-        
         <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
           Settings
         </h1>
@@ -110,15 +108,7 @@ function Page() {
 
         {activeTab === "projectCategory" && <ProjectCategorySection />}
 
-        {activeTab === "info" && (
-          <div>
-            <h2 className="text-lg font-semibold">Information</h2>
-
-            <p className="mt-1 text-sm text-muted-foreground">
-              View application information.
-            </p>
-          </div>
-        )}
+        {activeTab === "info" && <InformationSection />}
       </div>
     </div>
   );

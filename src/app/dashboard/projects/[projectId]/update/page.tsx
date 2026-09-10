@@ -9,25 +9,36 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 import { useRef } from "react";
-import { Plus } from "lucide-react";
+import { Check, ChevronsUpDown, Pencil } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { useRouter } from "next/navigation";
+import {
+  editProject,
+  EditProjectInput,
+} from "@/features/projects/schema/project";
+import { useParams, useRouter } from "next/navigation";
 import { useProjectStore } from "@/features/projects/store/project.store";
-import { AddTask, AddTaskInput } from "@/features/tasks/schema/task";
-import { Textarea } from "@/components/ui/textarea";
-import { useTaskStore } from "@/features/tasks/store/task.store";
-import { Task } from "@/features/tasks/types/task";
-import { useTaskStatusStore } from "@/features/tasks/store/statusTasks.store";
-import { useTasksPriorityStore } from "@/features/tasks/store/priorityTasks.store";
+import { Project } from "@/features/projects/types/project";
+import { useProjectStatusStore } from "@/features/projects/store/statusProject.store";
+import { useProjectPriorityStore } from "@/features/projects/store/priorityProject.store";
 import { getCurrentUser } from "@/features/auth/helper/auth";
+import { useUserStore } from "@/features/auth/store/register.store";
 import { useActivityStore } from "@/features/activity/store/activity.store";
 
 function page() {
   const router = useRouter();
+
+  const params = useParams<{ projectId: string }>();
+  const id = params.projectId;
 
   const user = getCurrentUser();
 
@@ -40,6 +51,9 @@ function page() {
       </div>
     );
   }
+  const getProjectById = useProjectStore((state) => state.getProjectById);
+
+  const project = getProjectById(id);
 
   const {
     register,
@@ -47,76 +61,62 @@ function page() {
     reset,
     control,
     formState: { errors, isSubmitting },
-  } = useForm<AddTaskInput>({
-    resolver: zodResolver(AddTask),
+  } = useForm<EditProjectInput>({
+    resolver: zodResolver(editProject),
     mode: "all",
     defaultValues: {
-      status: "",
-      priority: "",
-      projectId: "",
-      assigneeId: "",
+      title: project?.title,
+      description: project?.description,
+      startDate: project?.startDate,
+      dueDate: project?.dueDate,
+      status: project?.status,
+      priority: project?.priority,
+      membersList: [],
+      admin: project?.admin,
     },
   });
+  const startDateRef = useRef<HTMLInputElement | null>(null);
 
-  const users = [
-    {
-      id: "user-1",
-      name: "Zeyad Hatem",
-    },
-    {
-      id: "user-2",
-      name: "Ahmed Ali",
-    },
-    {
-      id: "user-3",
-      name: "Mohamed Hassan",
-    },
-    {
-      id: "user-4",
-      name: "Ali Mahmoud",
-    },
-  ];
+  const startDateRegister = register("startDate");
 
   const dueDateRef = useRef<HTMLInputElement | null>(null);
 
   const dueDateRegister = register("dueDate");
 
-  const addTask = useTaskStore((state) => state.addTask);
-
-  const taskStatus = useTaskStatusStore((state) => state.statuses);
-  const priorities = useTasksPriorityStore((state) => state.priorities);
+  const updateProject = useProjectStore((state) => state.updateProject);
+  const projectStatus = useProjectStatusStore((state) => state.statuses);
+  const priorities = useProjectPriorityStore((state) => state.priorities);
 
   const addActivity = useActivityStore((state) => state.addActivity);
 
-  const onSubmit = async (data: AddTaskInput) => {
+  const onSubmit = async (data: EditProjectInput) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const newTask: Task = {
-      id: crypto.randomUUID(),
-
+    const editProject: Partial<Project> = {
       title: data.title,
       description: data.description,
 
+      startDate: data.startDate,
       dueDate: data.dueDate,
 
       status: data.status,
       priority: data.priority,
 
-      assigneeId: data.assigneeId,
-      projectId: data.projectId,
+      admin: data.admin,
+
+      members: data.membersList.length,
+      membersList: data.membersList,
 
       userId: user.id,
-
-      createdAt: new Date().toISOString(),
     };
 
-    addTask(newTask);
+    updateProject(id, editProject);
 
     addActivity({
       id: crypto.randomUUID(),
-      type: "task-created",
+      type: "project-updated",
       title: data.title,
-      description: `The task has been successfully created.`,
+      description: `The project has been successfully updated.`,
       time: new Date().toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "2-digit",
@@ -125,30 +125,34 @@ function page() {
       userId: user.id,
     });
 
-    reset();
+    router.back();
   };
-  const projects = useProjectStore((state) => state.projects);
+
+  const users = useUserStore((state) => state.users);
 
   return (
     <div className="flex w-full justify-center px-3 py-4 sm:px-5 sm:py-6 lg:px-6">
       <div className="w-full max-w-3xl rounded-xl bg-white p-4 shadow-sm dark:bg-zinc-900 sm:p-6 lg:p-7">
         <div className="space-y-5">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-              Add Task
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
+              Update Project
             </h1>
 
-            <p className="mt-1 text-sm text-muted-foreground">
-              Create a new task and assign it to a project member.
+            <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">
+              Updating the project and refining its details.
             </p>
           </div>
 
-          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <form
+            className="space-y-6 sm:space-y-7"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="grid gap-1.5">
                 <Label
                   htmlFor="title"
-                  className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                  className="text-xs font-semibold uppercase text-gray-500 dark:text-zinc-400"
                 >
                   Title
                 </Label>
@@ -156,8 +160,8 @@ function page() {
                 <Input
                   id="title"
                   type="text"
+                  placeholder="E-commerce store project"
                   {...register("title")}
-                  placeholder="Enter task title"
                   className="h-10 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus-visible:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                 />
 
@@ -170,8 +174,60 @@ function page() {
 
               <div className="grid gap-1.5">
                 <Label
+                  htmlFor="description"
+                  className="text-xs font-semibold uppercase text-gray-500 dark:text-zinc-400"
+                >
+                  Description
+                </Label>
+
+                <Input
+                  id="description"
+                  type="text"
+                  placeholder="It is an online shopping site...."
+                  {...register("description")}
+                  className="h-10 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus-visible:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                />
+
+                {errors.description && (
+                  <p className="text-xs text-red-600 dark:text-red-400">
+                    {errors.description.message}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid gap-1.5">
+                <Label
+                  htmlFor="startdate"
+                  className="text-xs font-semibold uppercase text-gray-500 dark:text-zinc-400"
+                >
+                  Start Date
+                </Label>
+
+                <Input
+                  id="startdate"
+                  type="datetime-local"
+                  className="h-10 rounded-xl border-gray-200 bg-gray-50 py-5 text-gray-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                  {...startDateRegister}
+                  ref={(element) => {
+                    startDateRegister.ref(element);
+                    startDateRef.current = element;
+                  }}
+                  onClick={() => startDateRef.current?.showPicker()}
+                />
+
+                {errors.startDate && (
+                  <p className="text-xs text-red-600 dark:text-red-400">
+                    {errors.startDate.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="grid gap-1.5">
+                <Label
                   htmlFor="duedate"
-                  className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                  className="text-xs font-semibold uppercase text-gray-500 dark:text-zinc-400"
                 >
                   Due Date
                 </Label>
@@ -185,7 +241,7 @@ function page() {
                     dueDateRef.current = element;
                   }}
                   onClick={() => dueDateRef.current?.showPicker()}
-                  className="h-10 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus-visible:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                  className="h-10 rounded-xl border-gray-200 bg-gray-50 py-5 text-gray-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                 />
 
                 {errors.dueDate && (
@@ -196,7 +252,7 @@ function page() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Controller
                 name="status"
                 control={control}
@@ -223,7 +279,7 @@ function page() {
                         align="start"
                         className="rounded-xl p-1 border-gray-200 bg-white dark:border-zinc-700 ring-0 dark:bg-zinc-900"
                       >
-                        {taskStatus.map((status) => (
+                        {projectStatus.map((status) => (
                           <SelectItem
                             key={status.id}
                             value={status.id}
@@ -292,80 +348,31 @@ function page() {
               />
             </div>
 
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Controller
-                name="projectId"
+                name="admin"
                 control={control}
                 render={({ field }) => (
                   <div className="grid gap-1.5">
                     <Label
-                      htmlFor="project"
-                      className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                      htmlFor="admin"
+                      className="text-xs font-semibold uppercase text-gray-500 dark:text-zinc-400"
                     >
-                      Project
+                      Admin
                     </Label>
 
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger
-                        id="project"
-                        className="h-11 py-5 w-full rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus-visible:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                        id="admin"
+                        className="h-10 w-full rounded-xl border-gray-200 bg-gray-50 py-5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                       >
-                        <SelectValue placeholder="Select project" />
+                        <SelectValue placeholder="Select Admin" />
                       </SelectTrigger>
 
                       <SelectContent
                         position="popper"
                         side="bottom"
                         align="start"
-                        sideOffset={4}
-                        className="rounded-xl p-1 border-gray-200 bg-white dark:border-zinc-700 ring-0 dark:bg-zinc-900"
-                      >
-                        {projects.map((project) => (
-                          <SelectItem
-                            key={project.id}
-                            value={project.id}
-                            className="p-2 dark:hover:bg-gray-300/10 hover:bg-gray-800/10 cursor-pointer"
-                          >
-                            {project.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-                    {errors.projectId && (
-                      <p className="text-xs text-red-600 dark:text-red-400">
-                        {errors.projectId.message}
-                      </p>
-                    )}
-                  </div>
-                )}
-              />
-
-              <Controller
-                name="assigneeId"
-                control={control}
-                render={({ field }) => (
-                  <div className="grid gap-1.5">
-                    <Label
-                      htmlFor="assigneeId"
-                      className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
-                    >
-                      Assignee
-                    </Label>
-
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger
-                        id="assigneeId"
-                        className="h-11 py-5 w-full rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus-visible:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-                      >
-                        <SelectValue placeholder="Select member" />
-                      </SelectTrigger>
-
-                      <SelectContent
-                        position="popper"
-                        side="bottom"
-                        align="start"
-                        sideOffset={4}
                         className="rounded-xl p-1 border-gray-200 bg-white dark:border-zinc-700 ring-0 dark:bg-zinc-900"
                       >
                         {users.map((user) => (
@@ -380,9 +387,95 @@ function page() {
                       </SelectContent>
                     </Select>
 
-                    {errors.assigneeId && (
+                    {errors.admin && (
                       <p className="text-xs text-red-600 dark:text-red-400">
-                        {errors.assigneeId.message}
+                        {errors.admin.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />
+
+              <Controller
+                name="membersList"
+                control={control}
+                render={({ field }) => (
+                  <div className="grid gap-1.5">
+                    <Label
+                      htmlFor="members"
+                      className="text-xs font-semibold uppercase text-gray-500 dark:text-zinc-400"
+                    >
+                      Members
+                    </Label>
+
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          id="members"
+                          variant="outline"
+                          role="combobox"
+                          className="h-10 w-full justify-between rounded-xl border-gray-200 bg-gray-50 py-5 font-normal hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
+                        >
+                          <span className="truncate">
+                            {field.value.length > 0
+                              ? `${field.value.length} ${
+                                  field.value.length === 1
+                                    ? "Member"
+                                    : "Members"
+                                } Selected`
+                              : "Select Members"}
+                          </span>
+
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+
+                      <PopoverContent
+                        align="start"
+                        side="bottom"
+                        sideOffset={4}
+                        className="w-(--radix-popover-trigger-width) rounded-xl ring-0 border-gray-200 bg-white p-2 dark:border-zinc-700 dark:bg-zinc-900"
+                      >
+                        <div className="space-y-1">
+                          {users.map((member) => {
+                            const isSelected = field.value.includes(member.id);
+
+                            return (
+                              <div
+                                key={member.id}
+                                className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-zinc-800"
+                                onClick={() => {
+                                  const updatedMembers = isSelected
+                                    ? field.value.filter(
+                                        (id) => id !== member.id,
+                                      )
+                                    : [...field.value, member.id];
+
+                                  field.onChange(updatedMembers);
+                                }}
+                              >
+                                <Checkbox
+                                  checked={isSelected}
+                                  className="text-white border border-gray-800 dark:border-gray-800"
+                                />
+
+                                <span className="text-sm font-medium">
+                                  {member.name}
+                                </span>
+
+                                {isSelected && (
+                                  <Check className="ml-auto h-4 w-4" />
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+
+                    {errors.membersList && (
+                      <p className="text-xs text-red-600 dark:text-red-400">
+                        {errors.membersList.message}
                       </p>
                     )}
                   </div>
@@ -390,35 +483,7 @@ function page() {
               />
             </div>
 
-            <div className="grid gap-1.5">
-              <Label
-                htmlFor="description"
-                className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
-              >
-                Description
-              </Label>
-
-              <Textarea
-                id="description"
-                {...register("description")}
-                placeholder="Describe the task..."
-                className="h-28 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus-visible:ring-0 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-              />
-
-              {errors.description && (
-                <p className="text-xs text-red-600 dark:text-red-400">
-                  {errors.description.message}
-                </p>
-              )}
-            </div>
-
-            <div
-              className="
-              flex flex-col-reverse gap-3
-              border-t border-gray-200 dark:border-zinc-700 pt-5
-              sm:flex-row sm:justify-end
-            "
-            >
+            <div className="flex flex-col-reverse gap-3 border-t border-gray-200 pt-5 dark:border-zinc-700 sm:flex-row sm:justify-end">
               <Button
                 onClick={() => {
                   reset();
@@ -427,12 +492,7 @@ function page() {
                 type="button"
                 variant="outline"
                 disabled={isSubmitting}
-                className="
-                h-11 w-full cursor-pointer rounded-xl
-                border-border
-                font-semibold
-                sm:w-28
-              "
+                className="h-10 w-full cursor-pointer rounded-lg border-gray-300 font-semibold text-gray-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 sm:w-24"
               >
                 Cancel
               </Button>
@@ -440,22 +500,11 @@ function page() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="
-                h-11 w-full cursor-pointer gap-2 rounded-xl
-                bg-blue-700
-                font-semibold text-white
-                shadow-sm
-                transition-all
-                hover:bg-blue-800
-                hover:shadow-md
-                dark:bg-blue-600
-                dark:hover:bg-blue-700
-                sm:w-40
-              "
+                className="h-10 w-full cursor-pointer gap-2 rounded-lg bg-blue-800 font-semibold text-white shadow-sm transition-all hover:bg-blue-900 hover:-translate-y-0.5 hover:shadow-md dark:bg-blue-700 dark:hover:bg-blue-600 sm:w-44"
               >
-                <Plus className="h-4 w-4" />
+                <Pencil className="h-4 w-4" />
 
-                {isSubmitting ? "Adding..." : "Add Task"}
+                {isSubmitting ? "Updating..." : "Update Project"}
               </Button>
             </div>
           </form>

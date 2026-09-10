@@ -31,7 +31,11 @@ interface TasksPriorityStore {
         updatedPriority: Partial<TasksPriority>
     ) => void;
 
+
+
     removePriority: (id: string) => void;
+
+    getPriorityById: (id: string) => TasksPriority | undefined;
 
     initializePriorities: () => void;
 }
@@ -71,6 +75,9 @@ export const useTasksPriorityStore =
                                     priority.id !== id
                             ),
                         })),
+
+                    getPriorityById: (id) =>
+                        get().priorities.find((priority) => priority.id === id),
 
                     initializePriorities: () => {
                         if (get().priorities.length === 0) {

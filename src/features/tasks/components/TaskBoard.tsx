@@ -18,9 +18,24 @@ import { useTaskStore } from "../store/task.store";
 
 import { Task } from "../types/task";
 import { useTaskStatusStore } from "../store/statusTasks.store";
+import { getCurrentUser } from "@/features/auth/helper/auth";
 
 function TaskBoard() {
-  const tasks = useTaskStore((state) => state.tasks);
+  const user = getCurrentUser();
+
+  if (!user) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <p className="text-sm text-muted-foreground">
+          User information is not available.
+        </p>
+      </div>
+    );
+  }
+
+  const getTasksByUserId = useTaskStore((state) => state.getTasksByUserId);
+
+  const tasks = getTasksByUserId(user.id);
 
   const updateTask = useTaskStore((state) => state.updateTask);
 

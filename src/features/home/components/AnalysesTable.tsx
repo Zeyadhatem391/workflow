@@ -5,10 +5,30 @@ import { useProjectStore } from "@/features/projects/store/project.store";
 import { useTaskStore } from "@/features/tasks/store/task.store";
 import Link from "next/link";
 import { formatDate, getRemainingTime } from "@/shared/components/FormatDate";
+import { getCurrentUser } from "@/features/auth/helper/auth";
 
 function AnalysesTable() {
-  const projects = useProjectStore((state) => state.projects);
-  const tasks = useTaskStore((state) => state.tasks);
+  const user = getCurrentUser();
+
+  if (!user) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <p className="text-sm text-muted-foreground">
+          Please log in to perform any activities.
+        </p>
+      </div>
+    );
+  }
+
+  const getProjectByUserId = useProjectStore(
+    (state) => state.getProjectByUserId,
+  );
+
+  const projects = getProjectByUserId(user.id);
+
+  const getTasksByUserId = useTaskStore((state) => state.getTasksByUserId);
+
+  const tasks = getTasksByUserId(user.id);
 
   const getStatusStyle = (status: string) => {
     const styles: Record<string, string> = {

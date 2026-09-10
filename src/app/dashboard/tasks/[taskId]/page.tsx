@@ -14,8 +14,13 @@ import { useTaskStore } from "@/features/tasks/store/task.store";
 import { formatDateTime } from "@/shared/components/FormatDate";
 import { useProjectStore } from "@/features/projects/store/project.store";
 import { useUserStore } from "@/features/auth/store/register.store";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import DeleteTaskDialog from "@/features/tasks/components/DeleteTaskDialog";
+import Link from "next/link";
 
 function Page() {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const params = useParams<{ taskId: string }>();
 
   const getTaskById = useTaskStore((state) => state.getTaskById);
@@ -59,15 +64,31 @@ function Page() {
             {task.title}
           </h1>
           <div className="flex w-full gap-2 sm:w-auto">
-            <button className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover sm:flex-none">
-              <Pencil className="size-4" />
-              Edit Task
-            </button>
+            <Link href={`/dashboard/tasks/${params.taskId}/update`}>
+              <Button
+                size="sm"
+                className="h-9 flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover sm:flex-none"
+              >
+                <Pencil className="h-4 w-4" />
+                <span>Edit Task</span>
+              </Button>
+            </Link>
 
-            <button className="flex flex-1 items-center justify-center gap-2 rounded-lg  bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 sm:flex-none">
-              <Trash2 className="size-4" />
-              Delete
-            </button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setDeleteDialogOpen(true)}
+              className="h-9 flex-1 cursor-pointer gap-1.5 rounded-lg sm:flex-none bg-red-700 text-white"
+            >
+              <Trash2 className="h-4 w-4" />
+              <span>Delete</span>
+            </Button>
+
+            <DeleteTaskDialog
+              open={deleteDialogOpen}
+              onOpenChange={setDeleteDialogOpen}
+              taskId={task.id}
+            />
           </div>
         </div>
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">

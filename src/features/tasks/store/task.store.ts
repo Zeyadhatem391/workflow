@@ -9,8 +9,8 @@ interface TaskStore {
     removeTask: (id: string) => void;
     updateTask: (id: string, task: Partial<Task>) => void;
     getTaskById: (id: string) => Task | undefined;
-
     getTasksByProjectId: (projectId: string) => Task[];
+    getTasksByUserId: (userId: string) => Task[];
 }
 
 export const useTaskStore = create<TaskStore>()(
@@ -45,10 +45,16 @@ export const useTaskStore = create<TaskStore>()(
                         (task) => task.id === id
                     ),
 
-             
+
                 getTasksByProjectId: (projectId) =>
                     get().tasks.filter(
                         (task) => task.projectId === projectId
+                    ),
+
+
+                getTasksByUserId: (userId) =>
+                    get().tasks.filter(
+                        (task) => task.userId === userId
                     ),
             }),
             {

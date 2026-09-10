@@ -3,6 +3,7 @@
 import { CheckCircle2, Clock3, ListTodo } from "lucide-react";
 import { useTaskStore } from "@/features/tasks/store/task.store";
 import { calculateProjectProgress } from "@/features/projects/helper/calculateProjectProgress";
+import { getCurrentUser } from "@/features/auth/helper/auth";
 
 interface Detail {
   title: string;
@@ -16,7 +17,21 @@ interface PercentageProps {
 export default function Percentage({
   title = "Task Progress",
 }: PercentageProps) {
-  const tasks = useTaskStore((state) => state.tasks);
+  const user = getCurrentUser();
+
+  if (!user) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <p className="text-sm text-muted-foreground">
+          Please log in to perform any activities.
+        </p>
+      </div>
+    );
+  }
+
+  const getTasksByUserId = useTaskStore((state) => state.getTasksByUserId);
+
+  const tasks = getTasksByUserId(user.id);
 
   const totalTasks = tasks.length;
 
@@ -101,19 +116,6 @@ export default function Percentage({
               Completed
             </span>
           </div>
-        </div>
-
-        <div className="mt-5 flex items-center gap-2">
-          <div className="h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-500" />
-
-          <p className="text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">
-              {completedTasks}
-            </span>
-            of
-            <span className="font-semibold text-foreground">{totalTasks}</span>
-            tasks completed
-          </p>
         </div>
 
         <div className="mt-7 w-full space-y-1">

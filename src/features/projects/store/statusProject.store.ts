@@ -39,6 +39,8 @@ interface ProjectStatusStore {
 
     removeStatus: (id: string) => void;
 
+    getStatusById: (id: string) => ProjectStatus | undefined;
+
     initializeStatuses: () => void;
 }
 
@@ -76,6 +78,10 @@ export const useProjectStatusStore =
                                 (status) => status.id !== id
                             ),
                         })),
+
+                    getStatusById: (id) =>
+                        get().statuses.find((status) => status.id === id),
+
 
                     initializeStatuses: () => {
                         if (get().statuses.length === 0) {

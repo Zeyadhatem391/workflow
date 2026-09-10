@@ -1,20 +1,33 @@
 "use client";
-import {
-  CheckCircle2,
-  FolderKanban,
-  ListTodo,
-  Layers3,
-  CircleDot,
-} from "lucide-react";
+import { FolderKanban, ListTodo, Layers3, CircleDot } from "lucide-react";
 
 import StatisticsCard from "./StatisticsCard";
 import { useTaskStore } from "@/features/tasks/store/task.store";
 import { useProjectStore } from "@/features/projects/store/project.store";
+import { getCurrentUser } from "@/features/auth/helper/auth";
 
 function AnalysesCards() {
-  const projects = useProjectStore((state) => state.projects).length;
+  const user = getCurrentUser();
 
-  const tasks = useTaskStore((state) => state.tasks);
+  if (!user) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <p className="text-sm text-muted-foreground">
+          Please log in to perform any activities.
+        </p>
+      </div>
+    );
+  }
+
+  const getProjectByUserId = useProjectStore(
+    (state) => state.getProjectByUserId,
+  );
+
+  const projects = getProjectByUserId(user.id).length;
+
+  const getTasksByUserId = useTaskStore((state) => state.getTasksByUserId);
+
+  const tasks = getTasksByUserId(user.id);
 
   const inProgressTasks = tasks.filter(
     (task) => task.status === "in-progress",

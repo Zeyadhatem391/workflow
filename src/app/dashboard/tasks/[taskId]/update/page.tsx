@@ -11,13 +11,13 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { useRef } from "react";
-import { Plus } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useProjectStore } from "@/features/projects/store/project.store";
-import { AddTask, AddTaskInput } from "@/features/tasks/schema/task";
+import { editTask, EditTaskInput } from "@/features/tasks/schema/task";
 import { Textarea } from "@/components/ui/textarea";
 import { useTaskStore } from "@/features/tasks/store/task.store";
 import { Task } from "@/features/tasks/types/task";
@@ -27,6 +27,8 @@ import { getCurrentUser } from "@/features/auth/helper/auth";
 import { useActivityStore } from "@/features/activity/store/activity.store";
 
 function page() {
+  const params = useParams<{ taskId: string }>();
+  const id = params.taskId;
   const router = useRouter();
 
   const user = getCurrentUser();
@@ -41,20 +43,27 @@ function page() {
     );
   }
 
+  const getTaskById = useTaskStore((state) => state.getTaskById);
+
+  const task = getTaskById(id);
+
   const {
     register,
     handleSubmit,
     reset,
     control,
     formState: { errors, isSubmitting },
-  } = useForm<AddTaskInput>({
-    resolver: zodResolver(AddTask),
+  } = useForm<EditTaskInput>({
+    resolver: zodResolver(editTask),
     mode: "all",
     defaultValues: {
-      status: "",
-      priority: "",
-      projectId: "",
-      assigneeId: "",
+      title: task?.title,
+      description: task?.description,
+      dueDate: task?.dueDate,
+      status: task?.status,
+      priority: task?.priority,
+      projectId: task?.projectId,
+      assigneeId: task?.assigneeId,
     },
   });
 
@@ -81,42 +90,33 @@ function page() {
 
   const dueDateRegister = register("dueDate");
 
-  const addTask = useTaskStore((state) => state.addTask);
+  const updateTask = useTaskStore((state) => state.updateTask);
 
   const taskStatus = useTaskStatusStore((state) => state.statuses);
   const priorities = useTasksPriorityStore((state) => state.priorities);
 
   const addActivity = useActivityStore((state) => state.addActivity);
 
-  const onSubmit = async (data: AddTaskInput) => {
+  const onSubmit = async (data: EditTaskInput) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const newTask: Task = {
-      id: crypto.randomUUID(),
-
+    const updatedTask: Partial<Task> = {
       title: data.title,
       description: data.description,
-
       dueDate: data.dueDate,
-
       status: data.status,
       priority: data.priority,
-
       assigneeId: data.assigneeId,
       projectId: data.projectId,
-
-      userId: user.id,
-
-      createdAt: new Date().toISOString(),
     };
 
-    addTask(newTask);
+    updateTask(id, updatedTask);
 
     addActivity({
       id: crypto.randomUUID(),
-      type: "task-created",
+      type: "task-updated",
       title: data.title,
-      description: `The task has been successfully created.`,
+      description: `The task has been successfully updated.`,
       time: new Date().toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "2-digit",
@@ -125,7 +125,7 @@ function page() {
       userId: user.id,
     });
 
-    reset();
+    router.back();
   };
   const projects = useProjectStore((state) => state.projects);
 
@@ -135,11 +135,11 @@ function page() {
         <div className="space-y-5">
           <div>
             <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-              Add Task
+              Update Task
             </h1>
 
             <p className="mt-1 text-sm text-muted-foreground">
-              Create a new task and assign it to a project member.
+              Update a task and assign it to a project member.
             </p>
           </div>
 
@@ -453,9 +453,9 @@ function page() {
                 sm:w-40
               "
               >
-                <Plus className="h-4 w-4" />
+                <Pencil className="h-4 w-4" />
 
-                {isSubmitting ? "Adding..." : "Add Task"}
+                {isSubmitting ? "Updating..." : "Update Task"}
               </Button>
             </div>
           </form>

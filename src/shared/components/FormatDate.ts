@@ -38,3 +38,31 @@ export const getRemainingTime = (dueDate: string) => {
 
   return `${minutes} ${minutes === 1 ? "minute" : "minutes"} left`;
 };
+
+
+export function formatActivityDate(date: string) {
+  const activityDate = new Date(date);
+
+  const today = new Date();
+  const yesterday = new Date();
+
+  yesterday.setDate(today.getDate() - 1);
+
+  const activityDay = activityDate.toISOString().split("T")[0];
+  const todayDay = today.toISOString().split("T")[0];
+  const yesterdayDay = yesterday.toISOString().split("T")[0];
+
+  if (activityDay === todayDay) {
+    return "Today";
+  }
+
+  if (activityDay === yesterdayDay) {
+    return "Yesterday";
+  }
+
+  return activityDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}

@@ -33,6 +33,8 @@ interface ProjectPriorityStore {
 
     removePriority: (id: string) => void;
 
+     getPriorityById: (id: string) => ProjectPriority | undefined;
+
     initializePriorities: () => void;
 }
 
@@ -71,6 +73,9 @@ export const useProjectPriorityStore =
                                     priority.id !== id
                             ),
                         })),
+
+                    getPriorityById: (id) =>
+                        get().priorities.find((priority) => priority.id === id),
 
                     initializePriorities: () => {
                         if (get().priorities.length === 0) {

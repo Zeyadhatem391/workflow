@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useUserStore } from "@/features/auth/store/register.store";
+import { useActivityStore } from "@/features/activity/store/activity.store";
 
 function page() {
   const router = useRouter();
@@ -37,6 +38,8 @@ function page() {
   });
 
   const login = useUserStore((state) => state.login);
+
+  const addActivity = useActivityStore((state) => state.addActivity);
 
   const onSubmit = async (data: LoginUserInput) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -60,6 +63,19 @@ function page() {
         sameSite: "lax",
       },
     );
+
+    addActivity({
+      id: crypto.randomUUID(),
+      type: "log-in",
+      title: user.name,
+      description: `Logged in successfully.`,
+      time: new Date().toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      }),
+      date: new Date().toISOString(),
+      userId:user.id,
+    });
 
     toast.success(`Welcome ${user.name}`);
 

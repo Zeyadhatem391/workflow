@@ -1,5 +1,5 @@
 
-import { ChartColumn, FolderKanban, LayoutDashboard, ListTodo, Settings, Users2 } from "lucide-react";
+import { Activity, ChartColumn, FolderKanban, LayoutDashboard, ListTodo, Settings, Users2 } from "lucide-react";
 
 export const menus = [
     {
@@ -18,9 +18,9 @@ export const menus = [
         link: "/dashboard/tasks",
     },
     {
-        icon: ChartColumn,
-        name: "analytics",
-        link: "/dashboard/analytics",
+        icon: Activity,
+        name: "Activity",
+        link: "/dashboard/activity",
     },
     {
         icon: Users2,

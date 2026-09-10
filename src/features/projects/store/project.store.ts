@@ -9,6 +9,7 @@ interface ProjectStore {
     removeProject: (id: string) => void;
     updateProject: (id: string, project: Partial<Project>) => void;
     getProjectById: (id: string) => Project | undefined;
+    getProjectByUserId: (userId: string) => Project[];
 }
 
 export const useProjectStore = create<ProjectStore>()(
@@ -42,10 +43,15 @@ export const useProjectStore = create<ProjectStore>()(
                     get().projects.find(
                         (project) => project.id === id
                     ),
+
+                getProjectByUserId: (userId) =>
+                    get().projects.filter(
+                        (project) => project.userId === userId
+                    ),
             }),
             {
                 name: "projects-storage",
-                  skipHydration: true,
+                skipHydration: true,
             }
         )
     )
