@@ -7,6 +7,7 @@ import { ProjectStatusInitializer } from "@/features/projects/helper/ProjectStat
 import { ProjectPriorityInitializer } from "@/features/projects/helper/ProjectPriorityInitializer";
 import { TaskPriorityInitializer } from "@/features/tasks/helper/TaskPriorityInitializer";
 import { TaskStatusInitializer } from "@/features/tasks/helper/TaskStatusInitializer";
+import { TeamInitializer } from "@/features/auth/helper/TeamInitializer";
 
 interface Props {
   children: ReactNode;
@@ -26,6 +27,7 @@ export default function AppProviders({ children }: Props) {
           <ProjectPriorityInitializer />
           <TaskStatusInitializer />
           <TaskPriorityInitializer />
+          <TeamInitializer />
           {children}
           <Toaster position="top-center" />
         </ZustendProviders>

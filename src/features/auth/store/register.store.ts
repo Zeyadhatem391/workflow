@@ -2,6 +2,33 @@ import { create } from "zustand";
 import { AddUserInput } from "../schema/register";
 import { persist } from "zustand/middleware";
 
+const defaultTeam: AddUserInput[] = [
+  {
+    id: crypto.randomUUID(),
+    name: "Ahmed Hassan",
+    email: "ahmed.hassan@gmail.com",
+    password: "Ahmed@123",
+  },
+  {
+    id: crypto.randomUUID(),
+    name: "Omar Mohamed",
+    email: "omar.mohamed@gmail.com",
+    password: "Omar@123",
+  },
+  {
+    id: crypto.randomUUID(),
+    name: "Youssef Ali",
+    email: "youssef.ali@gmail.com",
+    password: "Youssef@123",
+  },
+  {
+    id: crypto.randomUUID(),
+    name: "Mariam Adel",
+    email: "mariam.adel@gmail.com",
+    password: "Mariam@123",
+  },
+];
+
 interface RegisterStore {
   users: AddUserInput[];
   isEmailTaken: (email: string) => boolean;
@@ -25,6 +52,8 @@ interface RegisterStore {
   ) => void;
 
   clearResetOtp: () => void;
+
+  initializeTeam: () => void;
 }
 
 export const useUserStore = create<RegisterStore>()(
@@ -106,6 +135,17 @@ export const useUserStore = create<RegisterStore>()(
         get().users.find(
           (user) => user.id === id
         ),
+
+      initializeTeam: () => {
+        const { users } = get();
+
+        if (users.length > 1) return;
+
+        set({
+          users: defaultTeam,
+        });
+      },
+
     }),
     {
       name: "auth-storage",
